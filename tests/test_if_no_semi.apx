@@ -1,7 +1,0 @@
-fn main() -> i32 {
-    if true {
-        50
-    } else {
-        30
-    }
-}

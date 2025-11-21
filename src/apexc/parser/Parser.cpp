@@ -402,6 +402,14 @@ std::unique_ptr<ast::Stmt> Parser::parse_statement() {
     
     // Try to parse as expression
     auto expr = parse_expression();
+    if (!expr) {
+        // Expression parsing failed - this shouldn't happen in a well-formed program
+        // Return a dummy statement to allow parsing to continue
+        error("Failed to parse statement");
+        auto dummy = std::make_unique<ast::Stmt>(ast::StmtKind::Expr, peek().location);
+        return dummy;
+    }
+    
     auto stmt = std::make_unique<ast::Stmt>(ast::StmtKind::Expr, expr->location);
     stmt->expr = std::move(expr);
     stmt->has_semicolon = match({TokenType::SEMICOLON});
@@ -937,6 +945,8 @@ std::unique_ptr<ast::Expr> Parser::parse_block_expr() {
     auto block = std::make_unique<ast::Expr>(ast::ExprKind::Block, previous().location);
     
     while (!check(TokenType::RBRACE) && !is_at_end()) {
+        size_t loop_start_pos = current_;
+        
         // Check if this is the final expression (no semicolon)
         if (!check(TokenType::KW_LET) && !check(TokenType::SEMICOLON)) {
             size_t saved = current_;
@@ -954,6 +964,12 @@ std::unique_ptr<ast::Expr> Parser::parse_block_expr() {
         
         auto stmt = parse_statement();
         block->block_stmts.push_back(std::move(stmt));
+        
+        // Safety check: ensure we advanced
+        if (current_ == loop_start_pos && !is_at_end() && !check(TokenType::RBRACE)) {
+            error("Parser stuck in infinite loop - advancing to next token");
+            advance(); // Force advance to prevent infinite loop
+        }
     }
     
     consume(TokenType::RBRACE, "Expected '}'");

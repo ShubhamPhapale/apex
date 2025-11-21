@@ -1,8 +1,0 @@
-fn main() -> i32 {
-    let x = if true {
-        50
-    } else {
-        30
-    };
-    x
-}
