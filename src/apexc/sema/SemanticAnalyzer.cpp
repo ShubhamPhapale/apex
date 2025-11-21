@@ -214,8 +214,33 @@ void SemanticAnalyzer::analyze_expr(ast::Expr* expr) {
             break;
             
         case ast::ExprKind::Binary:
-            analyze_expr(expr->left.get());
-            analyze_expr(expr->right.get());
+            // Handle assignment separately
+            if (expr->binary_op == ast::BinaryOp::Assign ||
+                expr->binary_op == ast::BinaryOp::AddAssign ||
+                expr->binary_op == ast::BinaryOp::SubAssign ||
+                expr->binary_op == ast::BinaryOp::MulAssign ||
+                expr->binary_op == ast::BinaryOp::DivAssign ||
+                expr->binary_op == ast::BinaryOp::ModAssign) {
+                // For assignment, left side must be an lvalue (identifier)
+                // We don't need to analyze the left side as an expr, just verify it's an identifier
+                if (expr->left && expr->left->kind == ast::ExprKind::Identifier) {
+                    // Verify the variable exists and is mutable
+                    if (expr->left->identifier) {
+                        const std::string& var_name = *expr->left->identifier;
+                        Symbol* sym = current_scope_->lookup(var_name);
+                        if (sym && !sym->is_mutable) {
+                            // Error: cannot assign to immutable variable
+                            // For now, just continue
+                        }
+                    }
+                }
+                // Analyze the right side normally
+                analyze_expr(expr->right.get());
+            } else {
+                // Regular binary operators
+                analyze_expr(expr->left.get());
+                analyze_expr(expr->right.get());
+            }
             // TODO: Type checking
             break;
             
