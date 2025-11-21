@@ -4,7 +4,7 @@ This directory contains a comprehensive random test suite that validates all lan
 
 ## Test Coverage
 
-The random test suite consists of 10 tests covering:
+The random test suite consists of 13 tests covering:
 
 ### 1. **random_arithmetic_complex.apx** (Expected: 147)
 - Complex nested arithmetic expressions
@@ -125,9 +125,36 @@ The random test suite complements the existing 30 tests by:
 - Ensuring features work together correctly
 - Providing confidence for future development
 
+### 11. **random_edge_cases.apx** (Expected: 255)
+- Zero handling and null cases
+- Boundary conditions (0..0 empty range)
+- Single iteration loops (0..1)
+- Division by zero protection
+- While false (condition never true)
+- Empty and nested empty blocks
+- Match with zero cases
+
+### 12. **random_recursion_deep.apx** (Expected: 233)
+- Tail-recursive functions
+- Limited factorial to prevent overflow
+- Count-down recursion
+- Nested recursive calls
+- Recursion in loops
+- Recursion in match expressions
+- Stack depth testing
+
+### 13. **random_precedence.apx** (Expected: 142)
+- Arithmetic operator precedence (* and / before + and -)
+- Left-to-right associativity
+- Parentheses override precedence
+- Nested parentheses
+- Complex expressions combining all operators
+- Comparison operators in expressions
+- Expression evaluation in match
+
 ## Statistics
 
 - **Original tests**: 30
-- **Random tests**: 10
-- **Total tests**: 40
+- **Random tests**: 13
+- **Total tests**: 43
 - **Pass rate**: 100%
