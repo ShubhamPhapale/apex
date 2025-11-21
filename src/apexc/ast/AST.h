@@ -164,7 +164,9 @@ struct Expr {
     // Break/Continue: break or continue (with optional label)
     std::optional<std::string> loop_label;
     
-    Expr(ExprKind k, SourceLocation loc) : kind(k), location(std::move(loc)) {}
+    Expr(ExprKind k, SourceLocation loc) 
+        : kind(k), location(std::move(loc)), 
+          binary_op(BinaryOp::Add), unary_op(UnaryOp::Neg) {}
 };
 
 // Patterns

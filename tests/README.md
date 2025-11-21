@@ -27,6 +27,7 @@ The test runner will:
 ### Mutable Variable Tests
 - **mut_basic.apex** - Basic mutable variable operations (Expected: 30)
 - **mut_multiple.apex** - Multiple mutable variables (Expected: 14)
+- **assignment.apex** - Assignment operator to mutable variables (Expected: 42)
 
 ### Range Expression Tests
 - **range_basic.apex** - Basic range 0..3 (Expected: 3)
@@ -40,6 +41,7 @@ The test runner will:
 
 All tests currently pass:
 ```
+✓ PASS assignment (exit code: 42)
 ✓ PASS for_basic (exit code: 45)
 ✓ PASS for_nested (exit code: 18)
 ✓ PASS mut_basic (exit code: 30)
@@ -65,8 +67,9 @@ All tests currently pass:
 - ✅ Nested loops
 - ✅ Arithmetic operations
 - ✅ Comparison operations
+- ✅ Assignment operator (`=`) for mutable variables
 
 ## Known Limitations
 
-- Assignment operator (`=`) for reassigning mutable variables causes compiler crash (under investigation)
 - Nested struct literals not yet supported (workaround: use intermediate variables)
+- Mutable variables must be declared with `let mut` syntax

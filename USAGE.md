@@ -99,9 +99,10 @@ All test files are in the `tests/` directory:
 
 ## Current Known Issues
 
-⚠️ **Assignment operator not working:** Statements like `x = new_value` cause compiler crashes. This is a known bug being investigated.
+⚠️ **Syntax requirement:** Mutable variables must use `let mut` syntax, not just `mut`.
 
-**Workaround:** Use fresh variables or loop constructs that handle mutation internally.
+**Correct:** `let mut x = 10;`
+**Incorrect:** `mut x = 10;` (will cause crash)
 
 ## Compiler Options
 

@@ -434,12 +434,16 @@ std::unique_ptr<ast::Expr> Parser::parse_expression() {
 std::unique_ptr<ast::Expr> Parser::parse_assignment() {
     auto expr = parse_logical_or();
     
+    if (!expr) return nullptr;
+    
     if (match({TokenType::ASSIGN, TokenType::PLUS_EQ, TokenType::MINUS_EQ, 
                TokenType::STAR_EQ, TokenType::SLASH_EQ, TokenType::PERCENT_EQ,
                TokenType::AMP_EQ, TokenType::PIPE_EQ, TokenType::CARET_EQ,
                TokenType::SHL_EQ, TokenType::SHR_EQ})) {
         Token op = previous();
         auto right = parse_assignment();
+        
+        if (!right) return nullptr;
         
         auto binary = std::make_unique<ast::Expr>(ast::ExprKind::Binary, op.location);
         
