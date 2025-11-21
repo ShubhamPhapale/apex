@@ -73,6 +73,7 @@ private:
     std::unique_ptr<ast::Expr> parse_unary();
     std::unique_ptr<ast::Expr> parse_postfix();
     std::unique_ptr<ast::Expr> parse_primary();
+    std::unique_ptr<ast::Expr> parse_primary_no_struct(); // Like parse_primary but doesn't check for struct literals
     
     std::unique_ptr<ast::Expr> parse_if_expr();
     std::unique_ptr<ast::Expr> parse_while_expr();

@@ -736,6 +736,61 @@ std::unique_ptr<ast::Expr> Parser::parse_postfix() {
     return expr;
 }
 
+// Parse primary expression without struct literal detection
+// Used in match expressions to avoid ambiguity with match arms
+std::unique_ptr<ast::Expr> Parser::parse_primary_no_struct() {
+    // Handle literals
+    if (match({TokenType::INTEGER_LITERAL, TokenType::FLOAT_LITERAL, TokenType::STRING_LITERAL, 
+               TokenType::CHAR_LITERAL, TokenType::KW_TRUE, TokenType::KW_FALSE, TokenType::KW_NULL})) {
+        auto lit = std::make_unique<ast::Expr>(ast::ExprKind::Literal, previous().location);
+        if (previous().type == TokenType::INTEGER_LITERAL) {
+            lit->literal_value = std::stoll(previous().lexeme);
+        } else if (previous().type == TokenType::FLOAT_LITERAL) {
+            lit->literal_value = std::stod(previous().lexeme);
+        } else if (previous().type == TokenType::STRING_LITERAL || previous().type == TokenType::CHAR_LITERAL) {
+            lit->literal_value = previous().lexeme;
+        } else if (previous().type == TokenType::KW_TRUE) {
+            lit->literal_value = true;
+        } else if (previous().type == TokenType::KW_FALSE) {
+            lit->literal_value = false;
+        }
+        return lit;
+    }
+    
+    // Identifier (without struct literal check)
+    if (check(TokenType::IDENTIFIER)) {
+        auto path = parse_path();
+        auto ident = std::make_unique<ast::Expr>(ast::ExprKind::Identifier, previous().location);
+        ident->identifier = path[0];
+        return ident;
+    }
+    
+    // Parenthesized expression
+    if (match({TokenType::LPAREN})) {
+        auto expr = parse_expression();
+        consume(TokenType::RPAREN, "Expected ')' after expression");
+        return expr;
+    }
+    
+    // Block expression
+    if (check(TokenType::LBRACE)) {
+        return parse_block_expr();
+    }
+    
+    // Unary operators
+    if (match({TokenType::MINUS, TokenType::NOT})) {
+        Token op = previous();
+        auto operand = parse_unary();
+        auto unary = std::make_unique<ast::Expr>(ast::ExprKind::Unary, op.location);
+        unary->unary_op = (op.type == TokenType::MINUS) ? ast::UnaryOp::Neg : ast::UnaryOp::Not;
+        unary->operand = std::move(operand);
+        return unary;
+    }
+    
+    error_at(peek(), "Expected expression");
+    return nullptr;
+}
+
 std::unique_ptr<ast::Expr> Parser::parse_primary() {
     // Literals
     if (match({TokenType::INTEGER_LITERAL})) {
@@ -956,9 +1011,44 @@ std::unique_ptr<ast::Expr> Parser::parse_for_expr() {
 std::unique_ptr<ast::Expr> Parser::parse_match_expr() {
     auto match_expr = std::make_unique<ast::Expr>(ast::ExprKind::Match, previous().location);
     
-    // Parse the match value (don't allow struct literals here - just parse up to comparison)
-    // We need to avoid matching the { as a struct literal start
-    match_expr->match_expr = parse_logical_or();  // Parse without assignment/struct literals
+    // Parse the match value
+    // We need to be careful here: `match x {` should treat `x` as the value, not `x {}` as struct literal
+    // Solution: Parse a simple postfix expression (no binary ops, no struct literals)
+    // Start by parsing primary without struct literal detection
+    auto expr = parse_primary_no_struct();
+    
+    // Then handle postfix operations (.field, [index], (call))
+    while (true) {
+        if (match({TokenType::LPAREN})) {
+            // Function call
+            auto call = std::make_unique<ast::Expr>(ast::ExprKind::Call, previous().location);
+            call->callee = std::move(expr);
+            if (!check(TokenType::RPAREN)) {
+                do {
+                    call->arguments.push_back(parse_expression());
+                } while (match({TokenType::COMMA}));
+            }
+            consume(TokenType::RPAREN, "Expected ')' after arguments");
+            expr = std::move(call);
+        } else if (match({TokenType::LBRACKET})) {
+            // Index
+            auto index = std::make_unique<ast::Expr>(ast::ExprKind::Index, previous().location);
+            index->indexed_expr = std::move(expr);
+            index->index_expr = parse_expression();
+            consume(TokenType::RBRACKET, "Expected ']' after index");
+            expr = std::move(index);
+        } else if (match({TokenType::DOT})) {
+            // Field access
+            auto field = std::make_unique<ast::Expr>(ast::ExprKind::FieldAccess, previous().location);
+            field->object = std::move(expr);
+            field->field_name = consume(TokenType::IDENTIFIER, "Expected field name").lexeme;
+            expr = std::move(field);
+        } else {
+            break;
+        }
+    }
+    
+    match_expr->match_expr = std::move(expr);
     
     consume(TokenType::LBRACE, "Expected '{' after match expression");
     
