@@ -688,7 +688,9 @@ llvm::Value* LLVMCodeGen::codegen_expr(ast::Expr* expr) {
             llvm::Function* function = builder_->GetInsertBlock()->getParent();
             
             // Create a variable to store the result
-            llvm::AllocaInst* result_alloca = builder_->CreateAlloca(
+            // IMPORTANT: Create alloca at entry block to avoid stack issues in loops
+            llvm::IRBuilder<> tmp_builder(&function->getEntryBlock(), function->getEntryBlock().begin());
+            llvm::AllocaInst* result_alloca = tmp_builder.CreateAlloca(
                 llvm::Type::getInt32Ty(*context_), nullptr, "match.result");
             
             // Create end block
