@@ -1,9 +1,0 @@
-fn main() -> i32 {
-    let mut count: i32 = 0;
-    let mut temp: i32 = 20;
-    while temp > 0 {
-        count = count + 1;
-        temp = temp - 5;
-    }
-    count
-}

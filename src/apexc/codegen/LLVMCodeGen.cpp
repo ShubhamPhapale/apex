@@ -226,8 +226,21 @@ llvm::Function* LLVMCodeGen::codegen_function(ast::Item* func) {
         // Add parameters to symbol table
         named_values_.clear();
         named_allocas_.clear();  // Clear allocas for new function
+        
+        // Handle function parameters (mutable params need allocas)
+        idx = 0;
         for (auto& arg : llvm_func->args()) {
-            named_values_[std::string(arg.getName())] = &arg;
+            std::string param_name = std::string(arg.getName());
+            if (func->params[idx].is_mutable) {
+                // Mutable parameters: create alloca, store argument, use alloca
+                llvm::AllocaInst* alloca = builder_->CreateAlloca(arg.getType(), nullptr, param_name);
+                builder_->CreateStore(&arg, alloca);
+                named_allocas_[param_name] = alloca;
+            } else {
+                // Immutable parameters: use SSA value directly
+                named_values_[param_name] = &arg;
+            }
+            idx++;
         }
         
         llvm::Value* ret_val = codegen_expr(func->body.get());

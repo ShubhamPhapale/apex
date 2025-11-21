@@ -1,9 +1,0 @@
-fn modify(mut x: i32, add_val: i32) -> i32 {
-    x = x + add_val;
-    return x;
-}
-
-fn main() -> i32 {
-    let result: i32 = modify(5, 10);
-    return result;
-}
