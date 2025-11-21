@@ -300,7 +300,7 @@ fn process_file(path: &str) {
 - **Examples:** `examples/` directory
 - **Build Guide:** `docs/BUILD.md`
 - **Contributing:** `CONTRIBUTING.md`
-- **Status:** `STATUS.md`
+- **Status:** `docs/STATUS.md`
 
 ---
 

@@ -27,16 +27,25 @@ cd apex
 
 This repository contains the complete specification for the Apex programming language:
 
-1. **[01-overview.md](01-overview.md)** - Language overview, design goals, and philosophy
-2. **[02-features.md](02-features.md)** - Comprehensive feature specification
-3. **[03-syntax.md](03-syntax.md)** - Syntax specification with examples
-4. **[04-grammar.md](04-grammar.md)** - Formal EBNF grammar
-5. **[05-memory-model.md](05-memory-model.md)** - Memory model and safety rules
-6. **[06-compilation.md](06-compilation.md)** - Compilation workflow and architecture
-7. **[07-stdlib.md](07-stdlib.md)** - Standard library specification
-8. **[08-examples.md](08-examples.md)** - Complete example applications
-9. **[09-comparison.md](09-comparison.md)** - Language comparison matrix
-10. **[10-roadmap.md](10-roadmap.md)** - Future evolution roadmap
+### Core Documentation
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Contribution guidelines
+- **[CHANGELOG.md](CHANGELOG.md)** - Version history and changes
+- **[docs/BUILD.md](docs/BUILD.md)** - Build instructions
+- **[docs/USAGE.md](docs/USAGE.md)** - Usage guide
+- **[docs/QUICKREF.md](docs/QUICKREF.md)** - Quick reference
+- **[docs/STATUS.md](docs/STATUS.md)** - Implementation status
+
+### Language Specification
+1. **[01-overview.md](docs/spec/01-overview.md)** - Language overview, design goals, and philosophy
+2. **[02-features.md](docs/spec/02-features.md)** - Comprehensive feature specification
+3. **[03-syntax.md](docs/spec/03-syntax.md)** - Syntax specification with examples
+4. **[04-grammar.md](docs/spec/04-grammar.md)** - Formal EBNF grammar
+5. **[05-memory-model.md](docs/spec/05-memory-model.md)** - Memory model and safety rules
+6. **[06-compilation.md](docs/spec/06-compilation.md)** - Compilation workflow and architecture
+7. **[07-stdlib.md](docs/spec/07-stdlib.md)** - Standard library specification
+8. **[08-examples.md](docs/spec/08-examples.md)** - Complete example applications
+9. **[09-comparison.md](docs/spec/09-comparison.md)** - Language comparison matrix
+10. **[10-roadmap.md](docs/spec/10-roadmap.md)** - Future evolution roadmap
 
 ## Quick Start
 
@@ -120,11 +129,20 @@ apex/
 │   ├── sema/            # Semantic analysis
 │   ├── codegen/         # LLVM code generation
 │   └── main.cpp         # Compiler driver
+├── docs/                # Documentation
+│   ├── spec/            # Language specification (01-10)
+│   ├── BUILD.md         # Build instructions
+│   ├── STATUS.md        # Implementation status
+│   ├── USAGE.md         # Usage guide
+│   ├── QUICKREF.md      # Quick reference
+│   └── IMPLEMENTATION_SUMMARY.md
 ├── examples/            # Example programs (.apx files)
-├── docs/                # Additional documentation
+├── tests/               # Test suite
 ├── CMakeLists.txt       # Root build configuration
 ├── build.sh             # Build script
 ├── test.sh              # Test script
+├── CONTRIBUTING.md      # Contribution guidelines
+├── CHANGELOG.md         # Version history
 └── README.md            # This file
 ```
 

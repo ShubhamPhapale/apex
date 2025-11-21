@@ -140,7 +140,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Package manager
 - Full documentation
 
-For more details, see [10-roadmap.md](10-roadmap.md).
+For more details, see [docs/spec/10-roadmap.md](docs/spec/10-roadmap.md).
 
 ---
 

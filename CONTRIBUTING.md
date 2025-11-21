@@ -125,7 +125,7 @@ fn test_addition() {
 - Include examples for complex functions
 
 ### Language Specification
-- Update relevant .md files in repository root
+- Update relevant .md files in `docs/spec/`
 - Follow existing format and style
 - Include code examples
 
