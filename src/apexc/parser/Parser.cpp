@@ -1,5 +1,6 @@
 #include "Parser.h"
 #include <sstream>
+#include <iostream>
 
 namespace apex {
 
@@ -847,8 +848,12 @@ std::unique_ptr<ast::Expr> Parser::parse_primary() {
         auto path = parse_path();
         
         // Check for struct literal
-        if (check(TokenType::LBRACE)) {
-            return parse_struct_literal(path);
+        // Only treat as struct literal if:
+        // 1. Followed immediately by {, AND
+        // 2. The first identifier starts with uppercase (struct convention)
+        // This avoids confusion with comparisons like "a < b {" where 'b' is lowercase
+        if (check(TokenType::LBRACE) && !path.empty() && !path[0].empty() && std::isupper(path[0][0])) {
+            return parse_struct_literal(std::move(path));
         }
         
         // Simple identifier
@@ -947,23 +952,16 @@ std::unique_ptr<ast::Expr> Parser::parse_block_expr() {
     while (!check(TokenType::RBRACE) && !is_at_end()) {
         size_t loop_start_pos = current_;
         
-        // Check if this is the final expression (no semicolon)
-        if (!check(TokenType::KW_LET) && !check(TokenType::SEMICOLON)) {
-            size_t saved = current_;
-            auto expr = parse_expression();
-            
-            if (check(TokenType::RBRACE)) {
-                // Final expression
-                block->block_expr = std::move(expr);
-                break;
-            } else {
-                // Not final, revert and parse as statement
-                current_ = saved;
-            }
-        }
-        
+        // Parse statement
         auto stmt = parse_statement();
-        block->block_stmts.push_back(std::move(stmt));
+        
+        // Check if this statement is actually a final expression (no semicolon)
+        if (stmt && stmt->kind == ast::StmtKind::Expr && !stmt->has_semicolon && check(TokenType::RBRACE)) {
+            // This is the final expression of the block
+            block->block_expr = std::move(stmt->expr);
+        } else if (stmt) {
+            block->block_stmts.push_back(std::move(stmt));
+        }
         
         // Safety check: ensure we advanced
         if (current_ == loop_start_pos && !is_at_end() && !check(TokenType::RBRACE)) {
@@ -1028,43 +1026,9 @@ std::unique_ptr<ast::Expr> Parser::parse_match_expr() {
     auto match_expr = std::make_unique<ast::Expr>(ast::ExprKind::Match, previous().location);
     
     // Parse the match value
-    // We need to be careful here: `match x {` should treat `x` as the value, not `x {}` as struct literal
-    // Solution: Parse a simple postfix expression (no binary ops, no struct literals)
-    // Start by parsing primary without struct literal detection
-    auto expr = parse_primary_no_struct();
-    
-    // Then handle postfix operations (.field, [index], (call))
-    while (true) {
-        if (match({TokenType::LPAREN})) {
-            // Function call
-            auto call = std::make_unique<ast::Expr>(ast::ExprKind::Call, previous().location);
-            call->callee = std::move(expr);
-            if (!check(TokenType::RPAREN)) {
-                do {
-                    call->arguments.push_back(parse_expression());
-                } while (match({TokenType::COMMA}));
-            }
-            consume(TokenType::RPAREN, "Expected ')' after arguments");
-            expr = std::move(call);
-        } else if (match({TokenType::LBRACKET})) {
-            // Index
-            auto index = std::make_unique<ast::Expr>(ast::ExprKind::Index, previous().location);
-            index->indexed_expr = std::move(expr);
-            index->index_expr = parse_expression();
-            consume(TokenType::RBRACKET, "Expected ']' after index");
-            expr = std::move(index);
-        } else if (match({TokenType::DOT})) {
-            // Field access
-            auto field = std::make_unique<ast::Expr>(ast::ExprKind::FieldAccess, previous().location);
-            field->object = std::move(expr);
-            field->field_name = consume(TokenType::IDENTIFIER, "Expected field name").lexeme;
-            expr = std::move(field);
-        } else {
-            break;
-        }
-    }
-    
-    match_expr->match_expr = std::move(expr);
+    // Now that we use uppercase check for struct literals, we can safely parse full expressions
+    // parse_expression() already handles all postfix operations, so we don't need a separate loop
+    match_expr->match_expr = parse_expression();
     
     consume(TokenType::LBRACE, "Expected '{' after match expression");
     

@@ -1,0 +1,42 @@
+// Stress test: Complex mutation patterns
+// Expected: 109
+fn modify(mut x: i32, add_val: i32) -> i32 {
+    x = x + add_val;
+    x = x * 2;
+    return x;
+}
+
+fn main() -> i32 {
+    // Basic mutation
+    let mut a: i32 = 10;
+    a = a + 5;  // 15
+    a = a * 2;  // 30
+    
+    // Mutation in loops
+    let mut sum: i32 = 0;
+    for i in 0..5 {
+        sum = sum + i;  // 0 + 1 + 2 + 3 + 4 = 10
+    }
+    
+    // Mutation in nested loops
+    let mut product: i32 = 1;
+    for i in 1..4 {
+        for j in 1..3 {
+            product = product + i * j;  // (1*1 + 1*2) + (2*1 + 2*2) + (3*1 + 3*2) = 3 + 6 + 9 = 18
+        }
+    }
+    
+    // Mutation in conditionals
+    let mut val: i32 = 100;
+    if val > 50 {
+        val = val - 30;  // 70
+    } else {
+        val = val + 30;
+    }
+    
+    // Mutation through function
+    let mut b: i32 = 5;
+    b = modify(b, 10);  // (5 + 10) * 2 = 30
+    
+    return a + sum + product + b;
+}

@@ -1,0 +1,10 @@
+fn main() -> i32 {
+    let mut block_val: i32 = {
+        let mut x: i32 = 3;
+        x = x + 2;
+        x = x * 2;
+        x
+    };
+    block_val = block_val + 6;
+    block_val
+}
