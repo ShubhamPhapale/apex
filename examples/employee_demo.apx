@@ -1,0 +1,76 @@
+// Sample Apex program - Working version
+// This demonstrates features that are currently implemented
+// Expected exit code: 236 (12780 % 256)
+
+// Define a struct type (correct syntax: field: type)
+struct Employee {
+    id: i32,
+    age: i32,
+    salary: i32
+}
+
+// Function to compute nth Fibonacci number (recursive)
+fn fib(n: i32) -> i32 {
+    if n < 2 {
+        return n;
+    } else {
+        return fib(n - 1) + fib(n - 2);
+    }
+}
+
+// Function to compute bonus based on salary using match
+// Note: Range patterns not yet implemented, using discrete values
+fn compute_bonus(sal: i32) -> i32 {
+    match sal {
+        500 => 50,
+        1000 => 100,
+        3000 => 200,
+        8000 => 500,
+        _ => 25
+    }
+}
+
+// Calculate total compensation (salary + bonus)
+fn total_compensation(salary: i32) -> i32 {
+    return salary + compute_bonus(salary);
+}
+
+// Main function
+fn main() -> i32 {
+    // Create some employees
+    let emp1: Employee = Employee { id: 1, age: 25, salary: 900 };
+    let emp2: Employee = Employee { id: 2, age: 30, salary: 3000 };
+    let emp3: Employee = Employee { id: 3, age: 45, salary: 8000 };
+    
+    // Calculate total compensation for employees
+    let total1: i32 = total_compensation(emp1.salary);
+    let total2: i32 = total_compensation(emp2.salary);
+    let total3: i32 = total_compensation(emp3.salary);
+    
+    // Sum all compensation
+    let sum: i32 = total1 + total2 + total3;
+    
+    // Test Fibonacci
+    let n: i32 = 10;
+    let fib_result: i32 = fib(n);
+    
+    // Conditional test
+    let bonus: i32 = if fib_result > 50 {
+        100
+    } else {
+        50
+    };
+    
+    // Calculate final result
+    // emp1: 900 + 25 = 925
+    // emp2: 3000 + 200 = 3200
+    // emp3: 8000 + 500 = 8500
+    // sum: 12625
+    // fib(10): 55
+    // bonus: 100 (since 55 > 50)
+    // result: 12625 + 55 + 100 = 12780
+    // Return modulo 256: 12780 % 256 = 236
+    
+    let result: i32 = sum + fib_result + bonus;
+    return result;
+}

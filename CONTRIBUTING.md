@@ -6,12 +6,15 @@ Thank you for your interest in contributing to Apex! This document provides guid
 
 1. Fork the repository from https://github.com/ShubhamPhapale/apex
 2. Clone your fork: `git clone https://github.com/YOUR_USERNAME/apex.git`
-3. Create a branch: `git checkout -b feature/your-feature-name`
-4. Make your changes
-5. Test your changes: `./test.sh`
-6. Commit: `git commit -am 'Add some feature'`
-7. Push: `git push origin feature/your-feature-name`
-8. Create a Pull Request
+3. Add upstream remote: `git remote add upstream https://github.com/ShubhamPhapale/apex.git`
+4. Create a feature branch from `develop`: `git checkout develop && git checkout -b feature/your-feature-name`
+5. Make your changes following our [Branching Strategy](BRANCHING_STRATEGY.md)
+6. Test your changes: `cd tests && ./run_tests.sh`
+7. Commit using conventional commits: `git commit -m "feat: add your feature"`
+8. Push: `git push origin feature/your-feature-name`
+9. Create a Pull Request to `develop` branch (not `main`)
+
+**Important:** Read [BRANCHING_STRATEGY.md](BRANCHING_STRATEGY.md) for detailed workflow and commit conventions.
 
 ## Development Setup
 
@@ -28,6 +31,10 @@ Thank you for your interest in contributing to Apex! This document provides guid
 
 ### Testing
 ```bash
+# Comprehensive test suite (recommended - runs all 43 tests)
+cd tests && ./run_tests.sh
+
+# Quick smoke test (faster - tests basic functionality only)
 ./test.sh
 ```
 
@@ -113,8 +120,14 @@ fn test_addition() {
 
 ### Running Tests
 ```bash
-./test.sh                    # All tests
-./build/tests/unit_tests     # Unit tests only
+# Comprehensive test suite (43 tests - use this before submitting PR)
+cd tests && ./run_tests.sh
+
+# Quick smoke test (basic functionality check)
+./test.sh
+
+# Unit tests (when implemented)
+./build/tests/unit_tests
 ```
 
 ## Documentation
