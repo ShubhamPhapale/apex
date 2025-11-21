@@ -1,0 +1,65 @@
+// Random test: Function calls with various patterns
+// Expected: 204
+fn add(x: i32, y: i32) -> i32 {
+    return x + y;
+}
+
+fn multiply(x: i32, y: i32) -> i32 {
+    return x * y;
+}
+
+fn nested_call(a: i32, b: i32, c: i32) -> i32 {
+    let result: i32 = add(a, b) + multiply(b, c);
+    return result;
+}
+
+fn recursive_sum(n: i32) -> i32 {
+    if n <= 0 {
+        return 0;
+    } else {
+        return n + recursive_sum(n - 1);
+    }
+}
+
+fn chain_operations(x: i32) -> i32 {
+    let step1: i32 = add(x, 10);
+    let step2: i32 = multiply(step1, 2);
+    let step3: i32 = add(step2, 5);
+    return step3;
+}
+
+fn main() -> i32 {
+    // Simple function calls
+    let r1: i32 = add(10, 20);  // 30
+    let r2: i32 = multiply(5, 6);  // 30
+    
+    // Nested function calls
+    let r3: i32 = add(multiply(3, 4), add(5, 10));  // add(12, 15) = 27
+    
+    // Function calls in expressions
+    let r4: i32 = nested_call(5, 3, 4);  // add(5,3) + multiply(3,4) = 8+12 = 20
+    
+    // Recursive calls
+    let r5: i32 = recursive_sum(5);  // 5+4+3+2+1 = 15
+    
+    // Chained operations
+    let r6: i32 = chain_operations(10);  // (10+10)*2+5 = 45
+    
+    // Function calls in loops
+    let mut loop_sum: i32 = 0;
+    for i in 1..4 {
+        loop_sum = loop_sum + add(i, i * 2);  // add(1,2)+add(2,4)+add(3,6) = 3+6+9 = 18
+    }
+    
+    // Function calls in conditionals
+    let cond_result: i32 = if multiply(2, 3) > 5 {
+        add(10, 15)
+    } else {
+        multiply(5, 5)
+    };  // 25
+    
+    let total: i32 = r1 + r2 + r3 + r4 + r5 + r6 + loop_sum + cond_result;
+    // 30 + 30 + 27 + 20 + 15 + 45 + 18 + 25 = 210
+    
+    return total - 6;  // 204
+}

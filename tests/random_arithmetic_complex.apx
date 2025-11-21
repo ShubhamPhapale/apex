@@ -1,0 +1,19 @@
+// Random test: Complex arithmetic with nested operations
+// Expected: 147
+fn compute(x: i32, y: i32) -> i32 {
+    let a: i32 = x * 3 + y * 2;
+    let b: i32 = a - x + y;
+    let c: i32 = b / 2 + x * y;
+    return c;
+}
+
+fn main() -> i32 {
+    let result1: i32 = compute(5, 7);  // (5*3+7*2) - 5 + 7 = 29-5+7=31; 31/2+5*7=15+35=50
+    let result2: i32 = compute(10, 3);  // (10*3+3*2) - 10 + 3 = 36-10+3=29; 29/2+10*3=14+30=44
+    let result3: i32 = 100 - (result1 + result2);  // 100 - 94 = 6
+    
+    let nested: i32 = ((result1 * 2 - result2) + result3) / 3;  // (100-44+6)/3 = 62/3 = 20
+    let final: i32 = nested * 7 + result3 - 13;  // 20*7+6-13 = 140+6-13 = 133
+    
+    return final + 14;  // 133 + 14 = 147
+}

@@ -1,0 +1,51 @@
+// Random test: Multiple loop types with complex conditions
+// Expected: 206
+fn main() -> i32 {
+    let mut sum: i32 = 0;
+    
+    // Basic for loop with range
+    for i in 0..10 {
+        sum = sum + i;  // 0+1+2+...+9 = 45
+    }
+    
+    // Nested for loops
+    for i in 1..5 {
+        for j in 1..4 {
+            sum = sum + i + j;  // i=1: j=1,2,3 => 3,4,5=12; i=2: 4,5,6=15; i=3: 5,6,7=18; i=4: 6,7,8=21; total=66
+        }
+    }
+    
+    // While loop
+    let mut counter: i32 = 0;
+    let mut temp: i32 = 50;
+    while temp > 0 {
+        counter = counter + 1;
+        temp = temp - 10;  // Runs 5 times
+    }
+    sum = sum + counter * 5;  // sum = 111 + 25 = 136
+    
+    // For loop with offset range
+    for k in 5..10 {
+        sum = sum + k;  // 5+6+7+8+9 = 35
+    }
+    
+    // Nested while in for
+    for i in 0..3 {
+        let mut inner: i32 = 2;
+        while inner > 0 {
+            sum = sum + 1;
+            inner = inner - 1;
+        }  // Adds 6 total (3 iterations * 2)
+    }
+    
+    // Triple nested loops (small)
+    for i in 0..2 {
+        for j in 0..2 {
+            for k in 0..2 {
+                sum = sum + 1;  // 2*2*2 = 8
+            }
+        }
+    }
+    
+    return sum + 33;  // 171 + 47 = 218
+}

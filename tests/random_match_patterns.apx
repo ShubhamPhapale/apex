@@ -1,0 +1,63 @@
+// Random test: Match expressions with various patterns
+// Expected: 129
+fn categorize(n: i32) -> i32 {
+    match n {
+        0 => 10,
+        1 => 20,
+        2 => 30,
+        3 => 40,
+        4 => 50,
+        5 => 60,
+        _ => 99,
+    }
+}
+
+fn main() -> i32 {
+    let mut total: i32 = 0;
+    
+    // Match with literals
+    for i in 0..6 {
+        let val: i32 = match i {
+            0 => 5,
+            1 => 10,
+            2 => 15,
+            3 => 20,
+            4 => 25,
+            _ => 30,
+        };
+        total = total + val;  // 5+10+15+20+25+30 = 105
+    }
+    
+    // Match with function calls
+    total = total + categorize(2);  // 105 + 30 = 135
+    total = total + categorize(10); // 135 + 99 = 234 (wildcard)
+    
+    // Match with arithmetic
+    let x: i32 = match 3 + 2 {
+        0 => 1,
+        1 => 2,
+        2 => 3,
+        3 => 4,
+        4 => 5,
+        5 => 6,
+        _ => 7,
+    };
+    total = total + x;  // 234 + 6 = 240
+    
+    // Nested match in loop
+    let mut nested_sum: i32 = 0;
+    for i in 0..3 {
+        let inner: i32 = match i {
+            0 => match 1 {
+                0 => 0,
+                1 => 7,
+                _ => 0,
+            },
+            1 => 8,
+            _ => 9,
+        };
+        nested_sum = nested_sum + inner;  // 7+8+9 = 24
+    }
+    
+    return total - nested_sum - 87;  // 240 - 24 - 39 = 177
+}

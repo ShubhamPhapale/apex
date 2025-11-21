@@ -1,0 +1,50 @@
+// Random test: Mixed comparison operators and boolean logic
+// Expected: 42
+fn check_range(x: i32, min: i32, max: i32) -> i32 {
+    if x < min {
+        return 0;
+    } else {
+        if x > max {
+            return 0;
+        } else {
+            return 1;
+        }
+    }
+}
+
+fn main() -> i32 {
+    let mut score: i32 = 0;
+    
+    // Test various comparisons
+    if 10 < 20 {
+        score = score + 5;
+    }
+    
+    if 30 > 15 {
+        score = score + 7;
+    }
+    
+    if 25 <= 25 {
+        score = score + 3;
+    }
+    
+    if 40 >= 40 {
+        score = score + 2;
+    }
+    
+    // Nested comparisons
+    if score > 10 {
+        if score < 30 {
+            score = score + 10;
+        }
+    }
+    
+    // Function calls
+    let check1: i32 = check_range(15, 10, 20);  // 1
+    let check2: i32 = check_range(5, 10, 20);   // 0
+    let check3: i32 = check_range(25, 10, 20);  // 0
+    
+    score = score + check1 * 10 + check2 + check3;  // 27 + 10 = 37
+    
+    return score + 5;  // 42
+}

@@ -1,0 +1,107 @@
+// Random test: Integration of all features
+// Expected: 217
+struct Data {
+    value: i32,
+    multiplier: i32,
+}
+
+fn process_data(mut d: Data, offset: i32) -> i32 {
+    d.value = d.value + offset;
+    let result: i32 = d.value * d.multiplier;
+    return result;
+}
+
+fn fibonacci(n: i32) -> i32 {
+    if n <= 1 {
+        return n;
+    } else {
+        return fibonacci(n - 1) + fibonacci(n - 2);
+    }
+}
+
+fn main() -> i32 {
+    let mut total: i32 = 0;
+    
+    // Structs with mutations
+    let data1: Data = Data { value: 10, multiplier: 3 };
+    total = total + process_data(data1, 5);  // (10+5)*3 = 45
+    
+    // Loops with match
+    for i in 0..5 {
+        let contribution: i32 = match i {
+            0 => 5,
+            1 => 10,
+            2 => 15,
+            3 => 20,
+            _ => 25,
+        };
+        total = total + contribution;  // 5+10+15+20+25 = 75
+    }
+    // total = 120
+    
+    // Nested structures
+    let data2: Data = Data { value: 7, multiplier: 2 };
+    let result2: i32 = {
+        let temp: i32 = data2.value * 2;
+        if temp > 10 {
+            temp + data2.multiplier
+        } else {
+            temp - data2.multiplier
+        }
+    };  // 14 + 2 = 16
+    total = total + result2;  // 136
+    
+    // Recursive function
+    let fib5: i32 = fibonacci(5);  // 5
+    total = total + fib5;  // 141
+    
+    // Complex nested logic
+    let mut nested_result: i32 = 0;
+    for i in 1..4 {
+        for j in 1..3 {
+            let block_val: i32 = {
+                let x: i32 = i + j;
+                match x {
+                    2 => 3,
+                    3 => 5,
+                    4 => 7,
+                    5 => 9,
+                    _ => 11,
+                }
+            };
+            nested_result = nested_result + block_val;
+            // i=1: j=1,2 => x=2,3 => 3+5=8
+            // i=2: j=1,2 => x=3,4 => 5+7=12
+            // i=3: j=1,2 => x=4,5 => 7+9=16
+            // total: 36
+        }
+    }
+    total = total + nested_result;  // 177
+    
+    // While with simple counter
+    let mut counter: i32 = 0;
+    let mut loop_var: i32 = 20;
+    while loop_var > 0 {
+        counter = counter + 1;
+        loop_var = loop_var - 5;  // Runs 4 times
+    }
+    total = total + counter;  // 177 + 4 = 181
+    
+    // Final calculation with all features
+    let final_bonus: i32 = if total > 150 {
+        match total {
+            0 => 0,
+            _ => {
+                let calc: i32 = {
+                    let base: i32 = 10;
+                    base * 5
+                };
+                calc + 1
+            },
+        }
+    } else {
+        0
+    };  // 51
+    
+    return total + final_bonus;  // 181 + 51 = 232
+}

@@ -1,0 +1,66 @@
+// Random test: Mutable variables with complex modifications
+// Expected: 193
+fn modify_triple(mut x: i32, y: i32, mut z: i32) -> i32 {
+    x = x * 2;
+    z = z + y;
+    let result: i32 = x + z;
+    return result;
+}
+
+fn transform(mut val: i32) -> i32 {
+    val = val + 10;
+    val = val * 2;
+    val = val - 5;
+    return val;
+}
+
+fn main() -> i32 {
+    let mut a: i32 = 5;
+    let mut b: i32 = 10;
+    let mut c: i32 = 15;
+    
+    // Basic mutations
+    a = a + 3;  // 8
+    b = b * 2;  // 20
+    c = c - 5;  // 10
+    
+    let mut sum: i32 = a + b + c;  // 38
+    
+    // Mutations in loops
+    for i in 0..5 {
+        sum = sum + i * 2;  // 0+2+4+6+8 = 20
+    }
+    // sum = 58
+    
+    // Mutable parameters
+    let result1: i32 = modify_triple(5, 3, 7);  // 5*2 + (7+3) = 10 + 10 = 20
+    let result2: i32 = transform(10);  // (10+10)*2-5 = 35
+    
+    sum = sum + result1 + result2;  // 58 + 20 + 35 = 113
+    
+    // Mutations in conditionals
+    if sum > 100 {
+        sum = sum + 20;
+    } else {
+        sum = sum + 5;
+    }
+    // sum = 133
+    
+    // Mutations in nested blocks
+    let mut block_result: i32 = {
+        let mut temp: i32 = 10;
+        temp = temp * 3;  // 30
+        temp = temp + 5;  // 35
+        temp
+    };
+    
+    block_result = block_result + sum;  // 35 + 133 = 168
+    
+    // Final mutations
+    let mut final_val: i32 = block_result;
+    for i in 1..6 {
+        final_val = final_val + 1;  // Add 5
+    }
+    
+    return final_val + 20;  // 173 + 20 = 193
+}

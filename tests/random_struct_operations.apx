@@ -1,0 +1,38 @@
+// Random test: Struct operations with nested fields
+// Expected: 114
+struct Point {
+    x: i32,
+    y: i32,
+}
+
+struct Rectangle {
+    top_left: Point,
+    bottom_right: Point,
+}
+
+fn calculate_area(width: i32, height: i32) -> i32 {
+    return width * height;
+}
+
+fn main() -> i32 {
+    let p1: Point = Point { x: 5, y: 10 };
+    let p2: Point = Point { x: 20, y: 5 };
+    
+    let sum1: i32 = p1.x + p1.y + p2.x + p2.y;  // 5+10+20+5 = 40
+    
+    let rect: Rectangle = Rectangle {
+        top_left: Point { x: 0, y: 10 },
+        bottom_right: Point { x: 15, y: 0 }
+    };
+    
+    let width: i32 = rect.bottom_right.x - rect.top_left.x;  // 15
+    let height: i32 = rect.top_left.y - rect.bottom_right.y;  // 10
+    let area: i32 = calculate_area(width, height);  // 150
+    
+    let p3: Point = Point { x: 3, y: 7 };
+    let combined: i32 = p3.x * p3.y;  // 21
+    
+    let result: i32 = sum1 + area - combined - 55;  // 40 + 150 - 21 - 13 = 156
+    
+    return result;
+}
