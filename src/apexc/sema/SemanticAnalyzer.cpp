@@ -298,13 +298,14 @@ void SemanticAnalyzer::analyze_expr(ast::Expr* expr) {
                 // Bind pattern variables
                 if (arm.pattern && arm.pattern->kind == ast::PatternKind::Identifier) {
                     if (arm.pattern->binding_name) {
+                        const std::string& name = *arm.pattern->binding_name;
                         Symbol symbol;
-                        symbol.name = *arm.pattern->binding_name;
+                        symbol.name = name;
                         symbol.type = nullptr; // TODO: Infer from match expression
                         symbol.is_mutable = false; // Pattern bindings are immutable
                         symbol.is_initialized = true;
                         symbol.location = arm.pattern->location;
-                        current_scope_->define(symbol.name, std::move(symbol));
+                        current_scope_->define(name, std::move(symbol));
                     }
                 }
                 
