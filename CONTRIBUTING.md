@@ -31,6 +31,10 @@ Thank you for your interest in contributing to Apex! This document provides guid
 
 ### Testing
 ```bash
+# Comprehensive test suite (recommended - runs all 43 tests)
+cd tests && ./run_tests.sh
+
+# Quick smoke test (faster - tests basic functionality only)
 ./test.sh
 ```
 
@@ -116,8 +120,14 @@ fn test_addition() {
 
 ### Running Tests
 ```bash
-./test.sh                    # All tests
-./build/tests/unit_tests     # Unit tests only
+# Comprehensive test suite (43 tests - use this before submitting PR)
+cd tests && ./run_tests.sh
+
+# Quick smoke test (basic functionality check)
+./test.sh
+
+# Unit tests (when implemented)
+./build/tests/unit_tests
 ```
 
 ## Documentation
