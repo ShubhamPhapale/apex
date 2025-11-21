@@ -13,7 +13,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Complete standard library
 - LSP server for IDE support
 - Code formatter and linter
-- Comprehensive test suite
+
+## [1.0.0-alpha.2] - 2025-11-22
+
+### Added
+- Comprehensive random test suite (13 tests)
+  - random_arithmetic_complex: Complex nested arithmetic operations
+  - random_comparison_mixed: Mixed comparison operators
+  - random_loops_complex: Multiple loop types with nesting
+  - random_match_patterns: Match expressions with various patterns
+  - random_mutation_patterns: Mutable variables and parameters
+  - random_struct_operations: Struct operations with nested literals
+  - random_block_expressions: Block expressions with return patterns
+  - random_function_calls: Function calls including recursive
+  - random_if_else_chains: Deep if-else nesting
+  - random_integration_all: Integration of all features
+  - random_edge_cases: Boundary conditions and zero handling
+  - random_recursion_deep: Tail recursion and stack usage
+  - random_precedence: Expression precedence testing
+
+### Fixed
+- **CRITICAL:** Match expression result allocation in loops - allocas now created at function entry
+- **CRITICAL:** Mutable function parameters - parser now uses parse_pattern() to handle 'mut' keyword
+- **CRITICAL:** Mutable parameter codegen - allocas created for mutable params with proper SSA form
+- Struct literal ambiguity with comparison operators (uppercase type check)
+- Match expressions now parse full expressions, not just identifiers
+- Parser infinite loop on mutable function parameters
+
+### Changed
+- Test suite expanded from 30 to 43 tests (100% pass rate)
+- Match result storage now uses proper LLVM alloca placement
+- Function parameters support full pattern matching syntax
+- Mutable parameters treated differently from immutable (alloca vs SSA value)
+
+### Test Results
+- **Total tests:** 43 (30 original + 13 random)
+- **Passing:** 43/43 (100%)
+- **Failing:** 0/43 (0%)
+- **All critical bugs resolved**
 
 ## [1.0.0-alpha] - 2025-01-XX
 

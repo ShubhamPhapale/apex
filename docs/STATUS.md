@@ -44,7 +44,7 @@ This document tracks the implementation status of the Apex compiler and toolchai
 
 **Coverage:** ~95% - All essential features implemented, Unicode pending
 
-### 3. Parser (90%)
+### 3. Parser (95%)
 **Location:** `src/apexc/parser/`
 
 **Implemented:**
@@ -59,14 +59,17 @@ This document tracks the implementation status of the Apex compiler and toolchai
   - [x] Arrays (literal and repeat syntax)
   - [x] Blocks
   - [x] If expressions
-  - [x] Match expressions
-  - [x] Struct literals
+  - [x] Match expressions (full expression support)
+  - [x] Struct literals (including nested)
+  - [x] For loops with ranges
+  - [x] While loops
 - [x] Statement parsing
   - [x] Let statements (with pattern and type)
   - [x] Expression statements
   - [x] Item statements
 - [x] Item parsing
   - [x] Functions (with generics, parameters, return type, body)
+  - [x] Mutable function parameters (pattern-based)
   - [x] Structs (with fields and generics)
   - [x] Enums (with variants)
   - [x] Traits (basic structure)
@@ -86,6 +89,7 @@ This document tracks the implementation status of the Apex compiler and toolchai
 - [x] Pattern parsing
   - [x] Wildcard (_)
   - [x] Identifier bindings
+  - [x] Mutable bindings (mut identifier)
   - [x] Literals
   - [x] Tuples
   - [ ] Struct patterns (partial)
@@ -101,7 +105,7 @@ This document tracks the implementation status of the Apex compiler and toolchai
 - [ ] Attribute parsing (#[...])
 - [ ] Better error recovery strategies
 
-**Coverage:** ~90% - All core syntax implemented
+**Coverage:** ~95% - All core syntax implemented, advanced patterns pending
 
 ### 4. AST (Abstract Syntax Tree) (100%)
 **Location:** `src/apexc/ast/`
@@ -150,39 +154,47 @@ This document tracks the implementation status of the Apex compiler and toolchai
 
 **Coverage:** ~40% - Basic analysis works, advanced features pending
 
-### 6. Code Generation (70%)
+### 6. Code Generation (85%)
 **Location:** `src/apexc/codegen/`
 
 **Implemented:**
 - [x] LLVM context and module setup
 - [x] Target machine configuration (x86-64, ARM64)
 - [x] Function code generation
-  - [x] Parameter handling
+  - [x] Parameter handling (both immutable and mutable)
+  - [x] Mutable parameter allocas at entry block
   - [x] Return statements
   - [x] Basic blocks
+  - [x] Proper alloca placement
 - [x] Expression codegen
   - [x] Literals (integers, floats, booleans)
   - [x] Binary operations (arithmetic, logical, comparison, bitwise)
   - [x] Identifiers (variable lookup)
   - [x] Function calls
   - [x] If expressions with phi nodes
+  - [x] Match expressions with proper alloca placement
   - [x] Block expressions
+  - [x] For loops with ranges
+  - [x] While loops
 - [x] Type translation (Apex -> LLVM)
   - [x] Primitives (i8-i128, u8-u128, f32, f64, bool)
   - [x] Pointers
   - [x] Arrays (fixed size)
   - [x] Structs
 - [x] Struct type generation
+- [x] Struct literal codegen
+- [x] Struct field access
+- [x] Mutable variables and parameters
 - [x] Object file emission
 - [x] LLVM IR text emission
 - [x] Module verification
 
 **Partially Implemented:**
-- [ ] Let statements (variable allocation)
-- [ ] Advanced expressions
-  - [ ] Match expressions
-  - [ ] Loop expressions
-  - [ ] Pattern matching
+- [x] Let statements (variable allocation) - Working
+- [x] Advanced expressions
+  - [x] Match expressions - Working with proper alloca placement
+  - [x] Loop expressions - For and while working
+  - [ ] Pattern matching - Basic patterns only
 - [ ] Generic function instantiation
 
 **Not Implemented:**
@@ -191,7 +203,7 @@ This document tracks the implementation status of the Apex compiler and toolchai
 - [ ] Exception handling (panic/unwind)
 - [ ] C ABI compatibility helpers
 
-**Coverage:** ~70% - Basic codegen functional, advanced features pending
+**Coverage:** ~85% - All core codegen working, advanced features pending
 
 ### 7. Build System (100%)
 - [x] CMake configuration (root and subdirectories)
@@ -294,20 +306,46 @@ This document tracks the implementation status of the Apex compiler and toolchai
 
 ## ⏳ Planned Components
 
-### 1. Testing Infrastructure (10%)
+### 1. Testing Infrastructure (80%)
 **Target Location:** `tests/`
 
 **Current:**
-- [x] test.sh script
-- [ ] Unit tests (0%)
-- [ ] Integration tests (0%)
-- [ ] Regression tests (0%)
+- [x] test.sh script with automated validation
+- [x] 43 comprehensive test files (.apx)
+  - [x] 30 original feature tests
+  - [x] 13 random tests for edge cases
+- [x] Integration tests (43 tests covering all features)
+- [x] run_tests.sh with expected value validation
+- [x] Test documentation (RANDOM_TESTS.md)
+- [ ] Unit tests for compiler phases (0%)
 - [ ] Benchmark suite (0%)
 
+**Test Coverage:**
+- [x] Arithmetic operations (basic, complex, nested)
+- [x] Assignments (simple, compound, struct fields)
+- [x] Block expressions (simple, nested, with returns)
+- [x] Comparison operators (all variants)
+- [x] For loops (basic, nested, ranges, offsets)
+- [x] While loops (basic, nested)
+- [x] Functions (basic, recursive, parameters, returns)
+- [x] If expressions (basic, nested, chains)
+- [x] Match expressions (literals, wildcards, nested)
+- [x] Mutations (variables, parameters, struct fields)
+- [x] Ranges (basic, offset)
+- [x] Structs (basic, nested, literals, field access)
+- [x] Edge cases (zero handling, boundaries, empty loops)
+- [x] Expression precedence and associativity
+- [x] Deep recursion (tail recursive, nested calls)
+- [x] Integration (all features combined)
+
+**Test Results:**
+- Total: 43 tests
+- Passing: 43 (100%)
+- Failing: 0 (0%)
+
 **Planned:**
-- [ ] Catch2 or GoogleTest framework
-- [ ] Test all compiler phases
-- [ ] Compile and run all examples
+- [ ] Catch2 or GoogleTest framework for unit tests
+- [ ] Test individual compiler phases in isolation
 - [ ] Performance benchmarks vs C
 
 ### 2. Tooling (0%)
@@ -337,18 +375,18 @@ This document tracks the implementation status of the Apex compiler and toolchai
 |-----------|--------|----------|
 | Language Specification | ✅ Complete | 100% |
 | Lexer | ✅ Complete | 95% |
-| Parser | ✅ Complete | 90% |
+| Parser | ✅ Complete | 95% |
 | AST | ✅ Complete | 100% |
 | Semantic Analysis | 🔄 In Progress | 40% |
-| Code Generation | 🔄 In Progress | 70% |
+| Code Generation | ✅ Nearly Complete | 85% |
 | Standard Library | ⏳ Planned | 5% |
 | Borrow Checker | ⏳ Planned | 0% |
 | Examples | 🔄 In Progress | 30% |
-| Tests | ⏳ Planned | 10% |
+| Tests | ✅ Nearly Complete | 80% |
 | Tooling | ⏳ Planned | 0% |
-| Documentation | ✅ Nearly Complete | 90% |
+| Documentation | ✅ Complete | 95% |
 | Build System | ✅ Complete | 100% |
-| **TOTAL** | **🔄 Alpha** | **~55%** |
+| **TOTAL** | **🔄 Alpha** | **~65%** |
 
 ## 🎯 Next Milestones
 
@@ -387,10 +425,19 @@ This document tracks the implementation status of the Apex compiler and toolchai
 1. **Parser:** Limited error recovery - one error can cascade
 2. **Semantic Analyzer:** No type checking yet - accepts invalid types
 3. **Codegen:** No optimization - generates naive code
-4. **Examples:** Only 3 simple examples work
-5. **Standard Library:** Not implemented - can't do I/O
-6. **Tests:** No automated test suite
-7. **Documentation:** No API docs for compiler internals
+4. **Codegen:** Struct field mutation in while loops causes missing terminator (workaround available)
+5. **Parser:** Trailing commas in struct literals not supported
+6. **Examples:** Only 3 simple examples implemented
+7. **Standard Library:** Not implemented - can't do I/O beyond return codes
+8. **Documentation:** No API docs for compiler internals
+
+## ✅ Recently Fixed
+
+1. **Match expressions in loops** - Fixed alloca placement at function entry
+2. **Mutable function parameters** - Parser now handles 'mut' keyword correctly
+3. **Mutable parameter codegen** - Proper alloca creation and SSA form
+4. **Struct literal parsing** - Fixed ambiguity with comparison operators
+5. **Match expression parsing** - Now accepts full expressions, not just identifiers
 
 ## 📞 Contact
 

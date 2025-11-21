@@ -1,73 +1,99 @@
 # Known Issues and Limitations
 
-**Last Updated:** November 21, 2025  
-**Version:** 1.0.0-alpha
+**Last Updated:** November 22, 2025  
+**Version:** 1.0.0-alpha.2
 
-## Critical Issues
+## ✅ Recently Fixed Issues
 
-### 1. If/Match Expression Results Cause Segfault ⚠️ CRITICAL
-**Severity:** Critical  
-**Status:** Bug - Needs Fix  
-**Description:** Assigning if-expression or match-expression results to variables causes compiler segfault during codegen.
+### 1. If/Match Expression Results ✅ FIXED
+**Fixed in:** v1.0.0-alpha.2  
+**Description:** Match expressions in loops were causing LLVM verification failures due to allocas being created inside loop blocks.
 
-**Examples that FAIL:**
-```apex
-// Fails - if-expression assigned to variable
-let x: i32 = if a < b { 1 } else { 2 };
-
-// Fails - match-expression assigned to variable
-let y: i32 = match n {
-    0 => 10,
-    _ => 20,
-};
-
-// Fails - if-expression returned directly  
-return if a < b { 1 } else { 2 };
-```
-
-**Workaround:** Use if-statements with mutation instead
-```apex
-let mut x: i32 = 0;
-if a < b {
-    x = 1;
-} else {
-    x = 2;
-}
-```
-
-**Root Cause:** PHI node creation issue in codegen
+**Solution:** Match result allocas now created at function entry block using temporary IRBuilder, ensuring proper SSA form.
 
 ---
 
-### 2. Logical Operators Not Implemented
-**Severity:** High  
+### 2. Mutable Function Parameters ✅ FIXED
+**Fixed in:** v1.0.0-alpha.2  
+**Description:** Parser couldn't handle `mut` keyword in function parameters, causing infinite loops.
+
+**Solution:** Changed parse_function_params() to use parse_pattern() instead of consume(IDENTIFIER), enabling proper pattern matching for parameters.
+
+---
+
+### 3. Mutable Parameter Mutations ✅ FIXED
+**Fixed in:** v1.0.0-alpha.2  
+**Description:** Mutable function parameters were treated as immutable SSA values.
+
+**Solution:** Mutable parameters now get allocas at function entry, arguments stored, and allocas used in named_allocas_ map for mutation support.
+
+---
+
+## Current Limitations
+
+### 1. Logical Operators Not Implemented
+**Severity:** Medium  
 **Status:** Not Implemented  
 **Operators:** `&&`, `||`  
-**Workaround:** Use nested if statements
+**Workaround:** Use nested if statements or bitwise operators for boolean logic
 
 ---
 
-### 3. Struct Definitions Must Come Before main()
-**Severity:** Medium  
-**Description:** Struct definitions after main() cause verification failures
+### 2. Struct Field Mutation in While Loops
+**Severity:** Low  
+**Status:** Known Limitation  
+**Description:** Direct mutation of struct fields inside while loops causes codegen issues (missing basic block terminator).
+
+**Workaround:** Use intermediate variables
+```apex
+// Instead of:
+while data.value > 0 {
+    data.value = data.value - 1;
+}
+
+// Use:
+let mut temp: i32 = data.value;
+while temp > 0 {
+    temp = temp - 1;
+}
+data.value = temp;
+```
+
+---
+
+### 3. Trailing Commas in Struct Literals
+**Severity:** Low  
+**Status:** Parser Limitation  
+**Description:** Struct literals cannot have trailing commas after the last field.
+
+```apex
+// Works:
+let p = Point { x: 1, y: 2 };
+
+// Fails:
+let p = Point { x: 1, y: 2, };
+```
 
 ---
 
 ## Test Results
 
-**Test Suite Status:** 23/30 passing (76.7%)
+**Test Suite Status:** 43/43 passing (100%) ✅
 
-### Passing Tests (23)
-All basic feature tests + stress tests that don't use if/match expressions
+### Passing Tests (43)
+- ✅ All 30 original tests passing
+- ✅ All 13 random tests passing
+- ✅ arithmetic_*, assignment_*, block_*, comparison_*
+- ✅ comprehensive_integration, for_*, function_*
+- ✅ if_*, match_*, mutation_*, range_*, struct_*, while_*
+- ✅ All stress tests (comparison_stress, if_stress, match_stress, mutation_stress)
+- ✅ Random tests: arithmetic_complex, comparison_mixed, loops_complex
+- ✅ Random tests: match_patterns, mutation_patterns, struct_operations
+- ✅ Random tests: block_expressions, function_calls, if_else_chains
+- ✅ Random tests: integration_all, edge_cases, recursion_deep, precedence
 
-### Failing Tests (7)
-- ❌ comparison_stress (uses if-expressions - segfault)
-- ❌ if_stress (uses if-expressions - segfault)
-- ❌ match_stress (uses if-expressions - segfault)
-- ❌ comprehensive_integration (uses if/match expressions - segfault)
-- ⏳ mutation_stress (hangs - needs investigation)
-- ⏳ struct_stress (hangs - needs investigation)
-- ⏳ while_basic (hangs - needs investigation)
+### Failing Tests
+**None** - All 43 tests passing!
 
 ---
 

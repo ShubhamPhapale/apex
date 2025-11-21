@@ -109,7 +109,11 @@ Options:
 ## 🧪 Testing
 
 ```bash
-# Run test suite
+# Run comprehensive test suite (43 tests)
+cd tests
+./run_tests.sh
+
+# Quick test script
 ./test.sh
 
 # Test individual examples
@@ -117,6 +121,10 @@ Options:
 ./build/src/apexc/apexc examples/fibonacci.apx
 ./build/src/apexc/apexc examples/struct.apx
 ```
+
+**Test Suite:** 43/43 tests passing (100%)
+- 30 core feature tests
+- 13 random tests for edge cases, recursion, and precedence
 
 ## 📂 Project Structure
 
