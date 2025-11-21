@@ -1,0 +1,10 @@
+fn main() -> i32 {
+    let a = 10;
+    let b = 20;
+    let c = 30;
+    if a < b {
+        50
+    } else {
+        30
+    }
+}
