@@ -21,6 +21,23 @@ LLVMCodeGen::LLVMCodeGen(const std::string& module_name) {
     llvm::InitializeNativeTarget();
     llvm::InitializeNativeTargetAsmParser();
     llvm::InitializeNativeTargetAsmPrinter();
+    
+    // Set up data layout for the native target
+    auto target_triple = llvm::sys::getDefaultTargetTriple();
+    module_->setTargetTriple(target_triple);
+    
+    std::string error;
+    auto target = llvm::TargetRegistry::lookupTarget(target_triple, error);
+    if (!target) {
+        std::cerr << "Warning: Could not find target: " << error << std::endl;
+    } else {
+        llvm::TargetOptions opt;
+        auto target_machine = target->createTargetMachine(
+            target_triple, "generic", "", opt, std::nullopt);
+        if (target_machine) {
+            module_->setDataLayout(target_machine->createDataLayout());
+        }
+    }
 }
 
 bool LLVMCodeGen::generate(ast::Module* module) {
@@ -153,6 +170,11 @@ llvm::Type* LLVMCodeGen::codegen_type(ast::Type* type) {
             break;
             
         case ast::TypeKind::Named:
+            // Check if it's a primitive type name
+            if (type->primitive_name) {
+                return get_primitive_type(*type->primitive_name);
+            }
+            // Otherwise look up user-defined types
             if (!type->path_segments.empty()) {
                 auto it = structs_.find(type->path_segments[0]);
                 if (it != structs_.end()) {
@@ -209,11 +231,16 @@ llvm::Function* LLVMCodeGen::codegen_function(ast::Item* func) {
         
         llvm::Value* ret_val = codegen_expr(func->body.get());
         
-        if (ret_val) {
-            if (return_type->isVoidTy()) {
+        // Only add return if block doesn't already have a terminator
+        if (!builder_->GetInsertBlock()->getTerminator()) {
+            if (ret_val) {
+                if (return_type->isVoidTy()) {
+                    builder_->CreateRetVoid();
+                } else {
+                    builder_->CreateRet(ret_val);
+                }
+            } else if (return_type->isVoidTy()) {
                 builder_->CreateRetVoid();
-            } else {
-                builder_->CreateRet(ret_val);
             }
         }
         
@@ -250,7 +277,9 @@ llvm::Value* LLVMCodeGen::codegen_expr(ast::Expr* expr) {
         case ast::ExprKind::Literal:
             if (expr->literal_value) {
                 if (std::holds_alternative<int64_t>(*expr->literal_value)) {
-                    return llvm::ConstantInt::get(*context_, llvm::APInt(64, std::get<int64_t>(*expr->literal_value), true));
+                    int64_t val = std::get<int64_t>(*expr->literal_value);
+                    // Default to 32-bit integers for now (TODO: use type inference)
+                    return llvm::ConstantInt::get(*context_, llvm::APInt(32, val, true));
                 } else if (std::holds_alternative<double>(*expr->literal_value)) {
                     return llvm::ConstantFP::get(*context_, llvm::APFloat(std::get<double>(*expr->literal_value)));
                 } else if (std::holds_alternative<bool>(*expr->literal_value)) {
@@ -261,9 +290,20 @@ llvm::Value* LLVMCodeGen::codegen_expr(ast::Expr* expr) {
             
         case ast::ExprKind::Identifier:
             if (expr->identifier) {
+                // Check local variables first
                 auto it = named_values_.find(*expr->identifier);
                 if (it != named_values_.end()) {
-                    return it->second;
+                    llvm::Value* val = it->second;
+                    // If it's an alloca (local variable), load it
+                    if (llvm::AllocaInst* alloca = llvm::dyn_cast<llvm::AllocaInst>(val)) {
+                        return builder_->CreateLoad(alloca->getAllocatedType(), val, expr->identifier->c_str());
+                    }
+                    return val;
+                }
+                // Check functions
+                auto func_it = functions_.find(*expr->identifier);
+                if (func_it != functions_.end()) {
+                    return func_it->second;
                 }
             }
             return nullptr;
@@ -355,7 +395,10 @@ llvm::Value* LLVMCodeGen::codegen_expr(ast::Expr* expr) {
             // Then branch
             builder_->SetInsertPoint(then_bb);
             llvm::Value* then_val = codegen_expr(expr->then_branch.get());
-            builder_->CreateBr(merge_bb);
+            bool then_returns = builder_->GetInsertBlock()->getTerminator() != nullptr;
+            if (!then_returns) {
+                builder_->CreateBr(merge_bb);
+            }
             then_bb = builder_->GetInsertBlock();
             
             // Else branch
@@ -365,22 +408,46 @@ llvm::Value* LLVMCodeGen::codegen_expr(ast::Expr* expr) {
             if (expr->else_branch) {
                 else_val = codegen_expr(expr->else_branch.get());
             }
-            builder_->CreateBr(merge_bb);
+            bool else_returns = builder_->GetInsertBlock()->getTerminator() != nullptr;
+            if (!else_returns) {
+                builder_->CreateBr(merge_bb);
+            }
             else_bb = builder_->GetInsertBlock();
             
-            // Merge
-            func->insert(func->end(), merge_bb);
-            builder_->SetInsertPoint(merge_bb);
-            
-            if (then_val && else_val && then_val->getType() == else_val->getType()) {
-                llvm::PHINode* phi = builder_->CreatePHI(then_val->getType(), 2, "iftmp");
-                phi->addIncoming(then_val, then_bb);
-                phi->addIncoming(else_val, else_bb);
-                return phi;
+            // Merge - only if at least one branch doesn't return
+            if (!then_returns || !else_returns) {
+                func->insert(func->end(), merge_bb);
+                builder_->SetInsertPoint(merge_bb);
+                
+                // Create PHI node if both branches produce values and don't return
+                if (!then_returns && !else_returns && then_val && else_val && 
+                        then_val->getType() == else_val->getType()) {
+                    llvm::PHINode* phi = builder_->CreatePHI(then_val->getType(), 2, "iftmp");
+                    phi->addIncoming(then_val, then_bb);
+                    phi->addIncoming(else_val, else_bb);
+                    return phi;
+                }
+            } else {
+                // Both branches return - merge block is unreachable, don't create it
+                delete merge_bb;
+                // Builder is left pointing to the else block (which is terminated)
+                // This is fine - subsequent code is unreachable
             }
             
             return nullptr;
         }
+            
+        case ast::ExprKind::Return:
+            if (expr->return_value) {
+                llvm::Value* ret_val = codegen_expr(expr->return_value.get());
+                if (ret_val) {
+                    builder_->CreateRet(ret_val);
+                    return ret_val;
+                }
+            } else {
+                builder_->CreateRetVoid();
+            }
+            return nullptr;
             
         default:
             // TODO: Handle other expression kinds
@@ -394,9 +461,24 @@ llvm::Value* LLVMCodeGen::codegen_stmt(ast::Stmt* stmt) {
     switch (stmt->kind) {
         case ast::StmtKind::Expr:
             return codegen_expr(stmt->expr.get());
-        case ast::StmtKind::Let:
-            // TODO: Implement let statement codegen
+        case ast::StmtKind::Let: {
+            // Get variable name from pattern
+            if (stmt->let_pattern && 
+                stmt->let_pattern->kind == ast::PatternKind::Identifier &&
+                stmt->let_pattern->binding_name) {
+                const std::string& var_name = *stmt->let_pattern->binding_name;
+                
+                // TODO: Create alloca for mutable variables
+                // For now, store values directly (SSA style)
+                if (stmt->let_initializer) {
+                    llvm::Value* init_val = codegen_expr(stmt->let_initializer.get());
+                    if (init_val) {
+                        named_values_[var_name] = init_val;
+                    }
+                }
+            }
             return nullptr;
+        }
         default:
             return nullptr;
     }

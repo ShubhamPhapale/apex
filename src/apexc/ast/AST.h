@@ -53,7 +53,7 @@ struct Type {
 // Expressions
 enum class ExprKind {
     Literal, Identifier, Binary, Unary, Call, Index, FieldAccess, Cast,
-    StructLiteral, ArrayLiteral, Tuple, Block, If, Match, Range
+    StructLiteral, ArrayLiteral, Tuple, Block, If, Match, Range, Return
 };
 
 enum class BinaryOp {
@@ -147,6 +147,9 @@ struct Expr {
     std::unique_ptr<Expr> range_start;
     std::unique_ptr<Expr> range_end;
     bool is_inclusive{false};
+    
+    // Return: return expr
+    std::unique_ptr<Expr> return_value;
     
     Expr(ExprKind k, SourceLocation loc) : kind(k), location(std::move(loc)) {}
 };

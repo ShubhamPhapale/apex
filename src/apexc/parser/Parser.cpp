@@ -179,7 +179,7 @@ std::unique_ptr<ast::Item> Parser::parse_function(ast::Visibility vis) {
         item->return_type = std::move(void_type);
     }
     
-    if (check(TokenType::LBRACE)) {
+    if (match({TokenType::LBRACE})) {
         item->body = parse_block_expr();
     } else {
         consume(TokenType::SEMICOLON, "Expected function body or ';'");
@@ -718,13 +718,13 @@ std::unique_ptr<ast::Expr> Parser::parse_primary() {
     // Literals
     if (match({TokenType::INTEGER_LITERAL})) {
         auto lit = std::make_unique<ast::Expr>(ast::ExprKind::Literal, previous().location);
-        lit->literal_value = 0; // TODO: Parse actual value
+        lit->literal_value = std::stoll(previous().lexeme);
         return lit;
     }
     
     if (match({TokenType::FLOAT_LITERAL})) {
         auto lit = std::make_unique<ast::Expr>(ast::ExprKind::Literal, previous().location);
-        lit->literal_value = 0.0; // TODO: Parse actual value
+        lit->literal_value = std::stod(previous().lexeme);
         return lit;
     }
     
@@ -819,6 +819,15 @@ std::unique_ptr<ast::Expr> Parser::parse_primary() {
     // Match expression
     if (match({TokenType::KW_MATCH})) {
         return parse_match_expr();
+    }
+    
+    // Return expression
+    if (match({TokenType::KW_RETURN})) {
+        auto ret = std::make_unique<ast::Expr>(ast::ExprKind::Return, previous().location);
+        if (!check(TokenType::SEMICOLON) && !check(TokenType::RBRACE)) {
+            ret->return_value = parse_expression();
+        }
+        return ret;
     }
     
     error("Expected expression");

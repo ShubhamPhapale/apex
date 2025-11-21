@@ -156,9 +156,34 @@ void SemanticAnalyzer::analyze_stmt(ast::Stmt* stmt) {
     
     switch (stmt->kind) {
         case ast::StmtKind::Let:
-            // TODO: Analyze pattern and type
+            // Analyze initializer first
             if (stmt->let_initializer) {
                 analyze_expr(stmt->let_initializer.get());
+            }
+            
+            // Add variable to scope
+            if (stmt->let_pattern) {
+                if (stmt->let_pattern->kind == ast::PatternKind::Identifier) {
+                    if (!stmt->let_pattern->binding_name) {
+                        error(stmt->location, "Let statement identifier pattern has no binding_name");
+                    } else if (stmt->let_pattern->binding_name->empty()) {
+                        error(stmt->location, "Let statement identifier pattern has empty binding_name");
+                    } else {
+                        const std::string& name = *stmt->let_pattern->binding_name;
+                        Symbol symbol;
+                        symbol.name = name;
+                        symbol.type = stmt->let_type.get();
+                        symbol.is_mutable = stmt->let_pattern->is_mutable;
+                        symbol.is_initialized = (stmt->let_initializer != nullptr);
+                        symbol.location = stmt->location;
+                        
+                        if (!current_scope_->define(name, std::move(symbol))) {
+                            error(stmt->location, "Redefinition of '" + name + "'");
+                        }
+                    }
+                }
+            } else {
+                error(stmt->location, "Let statement missing pattern");
             }
             break;
         case ast::StmtKind::Expr:
@@ -260,6 +285,12 @@ void SemanticAnalyzer::analyze_expr(ast::Expr* expr) {
         case ast::ExprKind::Tuple:
             for (auto& elem : expr->tuple_elements) {
                 analyze_expr(elem.get());
+            }
+            break;
+            
+        case ast::ExprKind::Return:
+            if (expr->return_value) {
+                analyze_expr(expr->return_value.get());
             }
             break;
             

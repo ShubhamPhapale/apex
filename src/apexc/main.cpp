@@ -194,8 +194,10 @@ int main(int argc, char** argv) {
     }
     
     // Lexical analysis
+    if (opts.verbose) std::cout << "Starting lexer..." << std::endl;
     apex::Lexer lexer(source, opts.input_file);
     auto tokens = lexer.tokenize_all();
+    if (opts.verbose) std::cout << "Lexer done." << std::endl;
     
     if (lexer.has_errors()) {
         for (const auto& error : lexer.get_errors()) {
@@ -214,8 +216,10 @@ int main(int argc, char** argv) {
     }
     
     // Parsing
+    if (opts.verbose) std::cout << "Starting parser..." << std::endl;
     apex::Parser parser(std::move(tokens));
     auto module = parser.parse_module();
+    if (opts.verbose) std::cout << "Parser done." << std::endl;
     
     if (parser.has_errors()) {
         for (const auto& error : parser.get_errors()) {
@@ -234,6 +238,7 @@ int main(int argc, char** argv) {
     }
     
     // Semantic analysis
+    if (opts.verbose) std::cout << "Starting semantic analysis..." << std::endl;
     apex::sema::SemanticAnalyzer analyzer;
     if (!analyzer.analyze(module.get())) {
         for (const auto& error : analyzer.get_errors()) {
@@ -251,6 +256,7 @@ int main(int argc, char** argv) {
     }
     
     // Code generation
+    if (opts.verbose) std::cout << "Starting code generation..." << std::endl;
     apex::codegen::LLVMCodeGen codegen(opts.input_file);
     if (!codegen.generate(module.get())) {
         std::cerr << "Code generation failed\n";
@@ -275,6 +281,7 @@ int main(int argc, char** argv) {
     }
     
     // Emit output
+    if (opts.verbose) std::cout << "Emitting output..." << std::endl;
     bool success;
     if (opts.emit_llvm_ir) {
         success = codegen.emit_llvm_ir(output_file);
