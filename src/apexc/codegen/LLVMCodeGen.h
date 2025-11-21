@@ -27,7 +27,8 @@ private:
     std::unique_ptr<llvm::IRBuilder<>> builder_;
     
     // Symbol tables
-    std::unordered_map<std::string, llvm::Value*> named_values_;
+    std::unordered_map<std::string, llvm::Value*> named_values_; // SSA values (immutable)
+    std::unordered_map<std::string, llvm::AllocaInst*> named_allocas_; // Mutable variables
     std::unordered_map<std::string, llvm::Function*> functions_;
     std::unordered_map<std::string, llvm::StructType*> structs_;
     

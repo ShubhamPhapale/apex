@@ -294,6 +294,39 @@ void SemanticAnalyzer::analyze_expr(ast::Expr* expr) {
             }
             break;
             
+        case ast::ExprKind::While:
+            analyze_expr(expr->while_condition.get());
+            analyze_expr(expr->while_body.get());
+            break;
+            
+        case ast::ExprKind::For:
+            analyze_expr(expr->for_iterator.get());
+            
+            // Create new scope for loop body
+            push_scope();
+            
+            // Add loop variable to scope
+            if (expr->for_pattern && 
+                expr->for_pattern->kind == ast::PatternKind::Identifier &&
+                expr->for_pattern->binding_name) {
+                Symbol sym;
+                sym.name = *expr->for_pattern->binding_name;
+                sym.type = nullptr; // Type inference TODO
+                sym.is_mutable = false; // Loop variables are immutable
+                sym.is_initialized = true;
+                sym.location = expr->for_pattern->location;
+                current_scope_->define(sym.name, sym);
+            }
+            
+            analyze_expr(expr->for_body.get());
+            pop_scope();
+            break;
+            
+        case ast::ExprKind::Break:
+        case ast::ExprKind::Continue:
+            // TODO: Verify we're inside a loop
+            break;
+            
         default:
             // TODO: Handle other expression kinds
             break;

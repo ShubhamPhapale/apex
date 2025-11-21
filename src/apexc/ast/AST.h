@@ -53,7 +53,8 @@ struct Type {
 // Expressions
 enum class ExprKind {
     Literal, Identifier, Binary, Unary, Call, Index, FieldAccess, Cast,
-    StructLiteral, ArrayLiteral, Tuple, Block, If, Match, Range, Return
+    StructLiteral, ArrayLiteral, Tuple, Block, If, Match, Range, Return,
+    While, For, Break, Continue
 };
 
 enum class BinaryOp {
@@ -150,6 +151,18 @@ struct Expr {
     
     // Return: return expr
     std::unique_ptr<Expr> return_value;
+    
+    // While: while cond { body }
+    std::unique_ptr<Expr> while_condition;
+    std::unique_ptr<Expr> while_body;
+    
+    // For: for pattern in iterator { body }
+    std::unique_ptr<Pattern> for_pattern;
+    std::unique_ptr<Expr> for_iterator;
+    std::unique_ptr<Expr> for_body;
+    
+    // Break/Continue: break or continue (with optional label)
+    std::optional<std::string> loop_label;
     
     Expr(ExprKind k, SourceLocation loc) : kind(k), location(std::move(loc)) {}
 };

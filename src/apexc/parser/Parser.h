@@ -65,6 +65,7 @@ private:
     std::unique_ptr<ast::Expr> parse_bitwise_xor();
     std::unique_ptr<ast::Expr> parse_bitwise_and();
     std::unique_ptr<ast::Expr> parse_equality();
+    std::unique_ptr<ast::Expr> parse_range();
     std::unique_ptr<ast::Expr> parse_comparison();
     std::unique_ptr<ast::Expr> parse_shift();
     std::unique_ptr<ast::Expr> parse_term();
@@ -74,6 +75,8 @@ private:
     std::unique_ptr<ast::Expr> parse_primary();
     
     std::unique_ptr<ast::Expr> parse_if_expr();
+    std::unique_ptr<ast::Expr> parse_while_expr();
+    std::unique_ptr<ast::Expr> parse_for_expr();
     std::unique_ptr<ast::Expr> parse_match_expr();
     std::unique_ptr<ast::Expr> parse_block_expr();
     std::unique_ptr<ast::Expr> parse_struct_literal(std::vector<std::string> path);

@@ -548,17 +548,35 @@ std::unique_ptr<ast::Expr> Parser::parse_bitwise_and() {
 }
 
 std::unique_ptr<ast::Expr> Parser::parse_equality() {
-    auto expr = parse_comparison();
+    auto expr = parse_range();
     
     while (match({TokenType::EQ, TokenType::NE})) {
         Token op = previous();
-        auto right = parse_comparison();
+        auto right = parse_range();
         
         auto binary = std::make_unique<ast::Expr>(ast::ExprKind::Binary, op.location);
         binary->binary_op = (op.type == TokenType::EQ) ? ast::BinaryOp::Eq : ast::BinaryOp::Ne;
         binary->left = std::move(expr);
         binary->right = std::move(right);
         expr = std::move(binary);
+    }
+    
+    return expr;
+}
+
+std::unique_ptr<ast::Expr> Parser::parse_range() {
+    auto expr = parse_comparison();
+    
+    if (match({TokenType::DOT_DOT, TokenType::DOT_DOT_EQ})) {
+        Token op = previous();
+        auto range = std::make_unique<ast::Expr>(ast::ExprKind::Range, op.location);
+        range->range_start = std::move(expr);
+        range->is_inclusive = (op.type == TokenType::DOT_DOT_EQ);
+        
+        // Parse end expression
+        range->range_end = parse_comparison();
+        
+        return range;
     }
     
     return expr;
@@ -816,6 +834,16 @@ std::unique_ptr<ast::Expr> Parser::parse_primary() {
         return parse_if_expr();
     }
     
+    // While expression
+    if (match({TokenType::KW_WHILE})) {
+        return parse_while_expr();
+    }
+    
+    // For expression
+    if (match({TokenType::KW_FOR})) {
+        return parse_for_expr();
+    }
+    
     // Match expression
     if (match({TokenType::KW_MATCH})) {
         return parse_match_expr();
@@ -828,6 +856,18 @@ std::unique_ptr<ast::Expr> Parser::parse_primary() {
             ret->return_value = parse_expression();
         }
         return ret;
+    }
+    
+    // Break expression
+    if (match({TokenType::KW_BREAK})) {
+        auto brk = std::make_unique<ast::Expr>(ast::ExprKind::Break, previous().location);
+        return brk;
+    }
+    
+    // Continue expression
+    if (match({TokenType::KW_CONTINUE})) {
+        auto cont = std::make_unique<ast::Expr>(ast::ExprKind::Continue, previous().location);
+        return cont;
     }
     
     error("Expected expression");
@@ -881,6 +921,32 @@ std::unique_ptr<ast::Expr> Parser::parse_if_expr() {
     }
     
     return if_expr;
+}
+
+std::unique_ptr<ast::Expr> Parser::parse_while_expr() {
+    auto while_expr = std::make_unique<ast::Expr>(ast::ExprKind::While, previous().location);
+    
+    while_expr->while_condition = parse_expression();
+    
+    consume(TokenType::LBRACE, "Expected '{' after while condition");
+    while_expr->while_body = parse_block_expr();
+    
+    return while_expr;
+}
+
+std::unique_ptr<ast::Expr> Parser::parse_for_expr() {
+    auto for_expr = std::make_unique<ast::Expr>(ast::ExprKind::For, previous().location);
+    
+    for_expr->for_pattern = parse_pattern();
+    
+    consume(TokenType::KW_IN, "Expected 'in' after for pattern");
+    
+    for_expr->for_iterator = parse_expression();
+    
+    consume(TokenType::LBRACE, "Expected '{' after for iterator");
+    for_expr->for_body = parse_block_expr();
+    
+    return for_expr;
 }
 
 std::unique_ptr<ast::Expr> Parser::parse_match_expr() {
@@ -1066,6 +1132,9 @@ std::unique_ptr<ast::Pattern> Parser::parse_pattern() {
 }
 
 std::unique_ptr<ast::Pattern> Parser::parse_pattern_primary() {
+    // Check for mut keyword before pattern
+    bool is_mut = match({TokenType::KW_MUT});
+    
     // Wildcard: _
     if (match({TokenType::IDENTIFIER})) {
         if (previous().lexeme == "_") {
@@ -1075,7 +1144,7 @@ std::unique_ptr<ast::Pattern> Parser::parse_pattern_primary() {
         // Identifier binding
         auto pat = std::make_unique<ast::Pattern>(ast::PatternKind::Identifier, previous().location);
         pat->binding_name = previous().lexeme;
-        pat->is_mutable = false; // TODO: Check for mut
+        pat->is_mutable = is_mut;
         return pat;
     }
     

@@ -290,18 +290,23 @@ llvm::Value* LLVMCodeGen::codegen_expr(ast::Expr* expr) {
             
         case ast::ExprKind::Identifier:
             if (expr->identifier) {
-                // Check local variables first
-                auto it = named_values_.find(*expr->identifier);
-                if (it != named_values_.end()) {
-                    llvm::Value* val = it->second;
-                    // If it's an alloca (local variable), load it
-                    if (llvm::AllocaInst* alloca = llvm::dyn_cast<llvm::AllocaInst>(val)) {
-                        return builder_->CreateLoad(alloca->getAllocatedType(), val, expr->identifier->c_str());
-                    }
-                    return val;
+                const std::string& name = *expr->identifier;
+                
+                // Check for mutable variables (allocas) first
+                auto alloca_it = named_allocas_.find(name);
+                if (alloca_it != named_allocas_.end()) {
+                    return builder_->CreateLoad(alloca_it->second->getAllocatedType(), 
+                                               alloca_it->second, name.c_str());
                 }
+                
+                // Check immutable variables
+                auto it = named_values_.find(name);
+                if (it != named_values_.end()) {
+                    return it->second;
+                }
+                
                 // Check functions
-                auto func_it = functions_.find(*expr->identifier);
+                auto func_it = functions_.find(name);
                 if (func_it != functions_.end()) {
                     return func_it->second;
                 }
@@ -309,6 +314,25 @@ llvm::Value* LLVMCodeGen::codegen_expr(ast::Expr* expr) {
             return nullptr;
             
         case ast::ExprKind::Binary: {
+            // Handle assignment separately
+            if (expr->binary_op == ast::BinaryOp::Assign) {
+                // Left side must be an identifier
+                if (expr->left && expr->left->kind == ast::ExprKind::Identifier && expr->left->identifier) {
+                    const std::string& var_name = *expr->left->identifier;
+                    
+                    // Look up the alloca
+                    auto alloca_it = named_allocas_.find(var_name);
+                    if (alloca_it != named_allocas_.end()) {
+                        llvm::Value* right_val = codegen_expr(expr->right.get());
+                        if (right_val) {
+                            builder_->CreateStore(right_val, alloca_it->second);
+                            return right_val;
+                        }
+                    }
+                }
+                return nullptr;
+            }
+            
             llvm::Value* left = codegen_expr(expr->left.get());
             llvm::Value* right = codegen_expr(expr->right.get());
             
@@ -449,6 +473,135 @@ llvm::Value* LLVMCodeGen::codegen_expr(ast::Expr* expr) {
             }
             return nullptr;
             
+        case ast::ExprKind::While: {
+            llvm::Function* function = builder_->GetInsertBlock()->getParent();
+            
+            llvm::BasicBlock* loop_cond = llvm::BasicBlock::Create(*context_, "loop.cond", function);
+            llvm::BasicBlock* loop_body = llvm::BasicBlock::Create(*context_, "loop.body", function);
+            llvm::BasicBlock* loop_end = llvm::BasicBlock::Create(*context_, "loop.end", function);
+            
+            // Jump to condition check
+            builder_->CreateBr(loop_cond);
+            
+            // Generate condition
+            builder_->SetInsertPoint(loop_cond);
+            llvm::Value* cond = codegen_expr(expr->while_condition.get());
+            if (!cond) return nullptr;
+            builder_->CreateCondBr(cond, loop_body, loop_end);
+            
+            // Generate body
+            builder_->SetInsertPoint(loop_body);
+            codegen_expr(expr->while_body.get());
+            
+            // Jump back to condition (if block not already terminated)
+            if (!builder_->GetInsertBlock()->getTerminator()) {
+                builder_->CreateBr(loop_cond);
+            }
+            
+            // Continue with code after loop
+            builder_->SetInsertPoint(loop_end);
+            return nullptr;
+        }
+        
+        case ast::ExprKind::For: {
+            // For now, implement simple range-based for loops
+            // for i in 0..10 { ... }
+            
+            llvm::Function* function = builder_->GetInsertBlock()->getParent();
+            
+            llvm::BasicBlock* loop_cond = llvm::BasicBlock::Create(*context_, "for.cond", function);
+            llvm::BasicBlock* loop_body = llvm::BasicBlock::Create(*context_, "for.body", function);
+            llvm::BasicBlock* loop_inc = llvm::BasicBlock::Create(*context_, "for.inc", function);
+            llvm::BasicBlock* loop_end = llvm::BasicBlock::Create(*context_, "for.end", function);
+            
+            // Get iterator variable name from pattern
+            std::string var_name = "i";
+            if (expr->for_pattern && 
+                expr->for_pattern->kind == ast::PatternKind::Identifier &&
+                expr->for_pattern->binding_name) {
+                var_name = *expr->for_pattern->binding_name;
+            }
+            
+            // For Range expressions: 0..10
+            if (expr->for_iterator && expr->for_iterator->kind == ast::ExprKind::Range) {
+                llvm::Value* start_val = codegen_expr(expr->for_iterator->range_start.get());
+                llvm::Value* end_val = codegen_expr(expr->for_iterator->range_end.get());
+                if (!start_val || !end_val) return nullptr;
+                
+                // Create alloca for loop counter
+                llvm::AllocaInst* counter = builder_->CreateAlloca(
+                    llvm::Type::getInt32Ty(*context_), nullptr, var_name);
+                builder_->CreateStore(start_val, counter);
+                
+                // Jump to condition
+                builder_->CreateBr(loop_cond);
+                
+                // Condition: counter < end
+                builder_->SetInsertPoint(loop_cond);
+                llvm::Value* current = builder_->CreateLoad(llvm::Type::getInt32Ty(*context_), counter, var_name);
+                llvm::Value* cond = builder_->CreateICmpSLT(current, end_val, "for.cond");
+                builder_->CreateCondBr(cond, loop_body, loop_end);
+                
+                // Body
+                builder_->SetInsertPoint(loop_body);
+                // Make counter available as immutable variable in loop body
+                // Save any existing binding
+                llvm::AllocaInst* saved_alloca = nullptr;
+                llvm::Value* saved_value = nullptr;
+                auto alloca_it = named_allocas_.find(var_name);
+                if (alloca_it != named_allocas_.end()) {
+                    saved_alloca = alloca_it->second;
+                    named_allocas_.erase(alloca_it);
+                }
+                auto val_it = named_values_.find(var_name);
+                if (val_it != named_values_.end()) {
+                    saved_value = val_it->second;
+                }
+                
+                // Make counter alloca available
+                named_allocas_[var_name] = counter;
+                
+                codegen_expr(expr->for_body.get());
+                
+                // Restore previous bindings
+                named_allocas_.erase(var_name);
+                if (saved_alloca) {
+                    named_allocas_[var_name] = saved_alloca;
+                }
+                if (saved_value) {
+                    named_values_[var_name] = saved_value;
+                }
+                
+                // Jump to increment (if not already terminated)
+                if (!builder_->GetInsertBlock()->getTerminator()) {
+                    builder_->CreateBr(loop_inc);
+                }
+                
+                // Increment: counter++
+                builder_->SetInsertPoint(loop_inc);
+                llvm::Value* current_inc = builder_->CreateLoad(llvm::Type::getInt32Ty(*context_), counter, var_name);
+                llvm::Value* next = builder_->CreateAdd(current_inc, 
+                    llvm::ConstantInt::get(llvm::Type::getInt32Ty(*context_), 1), "for.inc");
+                builder_->CreateStore(next, counter);
+                builder_->CreateBr(loop_cond);
+                
+                // Continue after loop
+                builder_->SetInsertPoint(loop_end);
+                return nullptr;
+            }
+            
+            // TODO: Handle general iterators
+            return nullptr;
+        }
+        
+        case ast::ExprKind::Break:
+            // TODO: Implement break with proper loop context tracking
+            return nullptr;
+            
+        case ast::ExprKind::Continue:
+            // TODO: Implement continue with proper loop context tracking
+            return nullptr;
+            
         default:
             // TODO: Handle other expression kinds
             return nullptr;
@@ -467,13 +620,27 @@ llvm::Value* LLVMCodeGen::codegen_stmt(ast::Stmt* stmt) {
                 stmt->let_pattern->kind == ast::PatternKind::Identifier &&
                 stmt->let_pattern->binding_name) {
                 const std::string& var_name = *stmt->let_pattern->binding_name;
+                bool is_mutable = stmt->let_pattern->is_mutable;
                 
-                // TODO: Create alloca for mutable variables
-                // For now, store values directly (SSA style)
-                if (stmt->let_initializer) {
-                    llvm::Value* init_val = codegen_expr(stmt->let_initializer.get());
-                    if (init_val) {
-                        named_values_[var_name] = init_val;
+                if (is_mutable) {
+                    // Create alloca for mutable variables
+                    llvm::Type* var_type = llvm::Type::getInt32Ty(*context_); // Default to i32 for now
+                    llvm::AllocaInst* alloca = builder_->CreateAlloca(var_type, nullptr, var_name);
+                    named_allocas_[var_name] = alloca;
+                    
+                    if (stmt->let_initializer) {
+                        llvm::Value* init_val = codegen_expr(stmt->let_initializer.get());
+                        if (init_val) {
+                            builder_->CreateStore(init_val, alloca);
+                        }
+                    }
+                } else {
+                    // Immutable variables use SSA
+                    if (stmt->let_initializer) {
+                        llvm::Value* init_val = codegen_expr(stmt->let_initializer.get());
+                        if (init_val) {
+                            named_values_[var_name] = init_val;
+                        }
                     }
                 }
             }
