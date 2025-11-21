@@ -1060,16 +1060,16 @@ fn main() -> Result<void, Error> {
 
 ```
 echo_server/
-├── project.apex          # Build configuration
+├── project.apx          # Build configuration
 ├── src/
-│   ├── main.apex        # Main entry point
-│   ├── server.apex      # Server logic
-│   └── protocol.apex    # Protocol handling
+│   ├── main.apx        # Main entry point
+│   ├── server.apx      # Server logic
+│   └── protocol.apx    # Protocol handling
 └── tests/
-    └── integration.apex  # Integration tests
+    └── integration.apx  # Integration tests
 ```
 
-**project.apex:**
+**project.apx:**
 ```apex
 project {
     name: "echo_server",
@@ -1083,7 +1083,7 @@ project {
     targets: {
         executable: {
             name: "echo_server",
-            entry: "src/main.apex",
+            entry: "src/main.apx",
         },
     },
     

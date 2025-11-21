@@ -11,7 +11,7 @@ cd tests
 ```
 
 The test runner will:
-1. Compile each `.apex` file
+1. Compile each `.apx` file
 2. Link the object file to create an executable
 3. Run the executable and verify the exit code matches the expected value
 4. Report pass/fail for each test
@@ -19,23 +19,23 @@ The test runner will:
 ## Test Files
 
 ### Loop Tests
-- **for_basic.apex** - Basic for loop summing 0..9 (Expected: 45)
-- **for_nested.apex** - Nested for loops with multiplication (Expected: 18)
-- **while_basic.apex** - Basic while loop summing 0..9 (Expected: 45)
-- **while_nested.apex** - Nested while loops (Expected: 12)
+- **for_basic.apx** - Basic for loop summing 0..9 (Expected: 45)
+- **for_nested.apx** - Nested for loops with multiplication (Expected: 18)
+- **while_basic.apx** - Basic while loop summing 0..9 (Expected: 45)
+- **while_nested.apx** - Nested while loops (Expected: 12)
 
 ### Mutable Variable Tests
-- **mut_basic.apex** - Basic mutable variable operations (Expected: 30)
-- **mut_multiple.apex** - Multiple mutable variables (Expected: 14)
-- **assignment.apex** - Assignment operator to mutable variables (Expected: 42)
+- **mut_basic.apx** - Basic mutable variable operations (Expected: 30)
+- **mut_multiple.apx** - Multiple mutable variables (Expected: 14)
+- **assignment.apx** - Assignment operator to mutable variables (Expected: 42)
 
 ### Range Expression Tests
-- **range_basic.apex** - Basic range 0..3 (Expected: 3)
-- **range_offset.apex** - Range with offset 10..13 (Expected: 33)
+- **range_basic.apx** - Basic range 0..3 (Expected: 3)
+- **range_offset.apx** - Range with offset 10..13 (Expected: 33)
 
 ### Struct Tests
-- **struct_basic.apex** - Basic struct with fields (Expected: 25)
-- **struct_nested.apex** - Nested struct types (Expected: 80)
+- **struct_basic.apx** - Basic struct with fields (Expected: 25)
+- **struct_nested.apx** - Nested struct types (Expected: 80)
 
 ## Test Results
 

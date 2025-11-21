@@ -57,9 +57,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Verbose mode for debugging
   - Proper error reporting with source locations
 - Example programs
-  - hello.apex - Simple hello world
-  - fibonacci.apex - Recursive fibonacci
-  - struct.apex - Struct usage example
+  - hello.apx - Simple hello world
+  - fibonacci.apx - Recursive fibonacci
+  - struct.apx - Struct usage example
 - Build system
   - CMake configuration for all platforms
   - Build script (build.sh) for quick building

@@ -99,9 +99,9 @@ All specification documents totaling ~50,000 words:
 
 ### 4. Examples
 
-- **examples/hello.apex** - Simple arithmetic
-- **examples/fibonacci.apex** - Recursive functions
-- **examples/struct.apex** - Struct usage and methods
+- **examples/hello.apx** - Simple arithmetic
+- **examples/fibonacci.apx** - Recursive functions
+- **examples/struct.apx** - Struct usage and methods
 
 ### 5. Documentation
 
@@ -122,7 +122,7 @@ All specification documents totaling ~50,000 words:
 ### Compilation Pipeline
 
 ```
-Source Code (.apex)
+Source Code (.apx)
     ↓
 [Lexer] - Tokenization
     ↓
@@ -269,7 +269,7 @@ cd "/Users/shubhamsarjeraophapale/Random Projects/New Programming Language"
 ### Compile Your First Program
 ```bash
 # Create a file: test.apex
-cat > test.apex << 'EOF'
+cat > test.apx << 'EOF'
 fn main() -> i32 {
     let x: i32 = 42;
     let y: i32 = x + 8;
@@ -278,17 +278,17 @@ fn main() -> i32 {
 EOF
 
 # Compile it
-./build/src/apexc/apexc test.apex -o test.o
+./build/src/apexc/apexc test.apx -o test.o
 
 # View LLVM IR
-./build/src/apexc/apexc test.apex --emit-llvm
+./build/src/apexc/apexc test.apx --emit-llvm
 cat test.ll
 
 # View AST
-./build/src/apexc/apexc test.apex --emit-ast
+./build/src/apexc/apexc test.apx --emit-ast
 
 # Verbose compilation
-./build/src/apexc/apexc test.apex -v
+./build/src/apexc/apexc test.apx -v
 ```
 
 ---

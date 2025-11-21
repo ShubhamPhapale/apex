@@ -60,7 +60,7 @@ MIR → Optimizer → LLVM IR → LLVM Backend → Native Code
 **Error Messages:**
 ```apex
 error[E0308]: mismatched types
- --> src/main.apex:5:9
+ --> src/main.apx:5:9
   |
 5 |     let x: i32 = "hello";
   |         -        ^^^^^^^ expected `i32`, found `string`

@@ -436,7 +436,7 @@ fn main() -> i32 {
 ## Example 4: Embedded Program - LED Blinker (ARM Cortex-M)
 
 ```apex
-// blinker.apex - Embedded LED blinker for STM32F4
+// blinker.apx - Embedded LED blinker for STM32F4
 #![no_std]
 #![no_main]
 
@@ -538,7 +538,7 @@ fn panic(_info: &PanicInfo) -> ! {
 }
 ```
 
-**Build configuration (project.apex):**
+**Build configuration (project.apx):**
 ```apex
 project {
     name: "blinker",
@@ -556,7 +556,7 @@ project {
 ## Example 5: Simple Game Loop
 
 ```apex
-// game.apex - Simple game with SDL2
+// game.apx - Simple game with SDL2
 import sdl2.{Window, Renderer, Event, EventType};
 import std.time.{Instant, Duration};
 import std.io;
@@ -728,7 +728,7 @@ fn main() -> Result<void, string> {
 ## Example 6: System Calls - Direct System Call Wrapper
 
 ```apex
-// syscall.apex - Direct system call interface (Linux x86-64)
+// syscall.apx - Direct system call interface (Linux x86-64)
 import std.io;
 
 // System call numbers (Linux x86-64)
@@ -812,7 +812,7 @@ fn main() -> i32 {
 ## Example 7: C Interop - Using C Libraries
 
 ```apex
-// c_interop.apex - Using libcurl from Apex
+// c_interop.apx - Using libcurl from Apex
 import std.io;
 import std.string;
 
@@ -896,7 +896,7 @@ fn main() -> Result<void, string> {
 
 **Build with C library:**
 ```bash
-apexc -O2 -o http_client c_interop.apex -lcurl
+apexc -O2 -o http_client c_interop.apx -lcurl
 ```
 
 ---

@@ -208,18 +208,18 @@ This document tracks the implementation status of the Apex compiler and toolchai
 **Location:** `examples/`
 
 **Created:**
-- [x] hello.apex - Simple arithmetic
-- [x] fibonacci.apex - Recursive function
-- [x] struct.apex - Struct usage
+- [x] hello.apx - Simple arithmetic
+- [x] fibonacci.apx - Recursive function
+- [x] struct.apx - Struct usage
 
 **Specified but not implemented:**
-- [ ] grep.apex - CLI tool
-- [ ] http_server.apex - HTTP server
-- [ ] matrix_mul.apex - Parallel computation
-- [ ] led_blinker.apex - Embedded example
-- [ ] game_loop.apex - Real-time loop
-- [ ] syscalls.apex - Direct system calls
-- [ ] ffi_example.apex - C interop
+- [ ] grep.apx - CLI tool
+- [ ] http_server.apx - HTTP server
+- [ ] matrix_mul.apx - Parallel computation
+- [ ] led_blinker.apx - Embedded example
+- [ ] game_loop.apx - Real-time loop
+- [ ] syscalls.apx - Direct system calls
+- [ ] ffi_example.apx - C interop
 
 **Coverage:** ~30% (3/10 examples)
 

@@ -8,8 +8,8 @@ The Apex compiler (`apexc`) is designed as a multi-phase compiler with emphasis 
 
 ### File Extensions
 
-- `.apex` - Apex source files
-- `.apexmod` - Compiled module metadata
+- `.apx` - Apex source files
+- `.apxmod` - Compiled module metadata
 - `.o` - Object files
 - `.a` / `.lib` - Static libraries
 - `.so` / `.dll` / `.dylib` - Dynamic libraries
@@ -585,7 +585,7 @@ apex_link_libraries(my_program
 APEXC = apexc
 APEX_FLAGS = -O2
 
-my_program: src/main.apex src/module.apex
+my_program: src/main.apx src/module.apx
 	$(APEXC) $(APEX_FLAGS) -o $@ $^
 ```
 
@@ -805,12 +805,12 @@ project {
     targets: {
         executable: {
             name: "my_app",
-            entry: "src/main.apex",
+            entry: "src/main.apx",
         },
         
         library: {
-            name: "my_lib",
-            entry: "src/lib.apex",
+            name: "libmylib",
+            entry: "src/lib.apx",
             crate_type: "staticlib",  // or "dylib"
         },
     },

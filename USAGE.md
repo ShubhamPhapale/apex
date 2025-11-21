@@ -22,7 +22,7 @@ This creates the compiler at `build/src/apexc/apexc`.
 
 ```bash
 # 1. Compile Apex source to object file
-./build/src/apexc/apexc your_program.apex -o output.o
+./build/src/apexc/apexc your_program.apx -o output.o
 
 # 2. Link object file to create executable
 clang output.o -o output
@@ -37,7 +37,7 @@ echo "Exit code: $?"
 ### Method 2: One-Liner
 
 ```bash
-./build/src/apexc/apexc your_program.apex -o /tmp/test.o && \
+./build/src/apexc/apexc your_program.apx -o /tmp/test.o && \
 clang /tmp/test.o -o /tmp/test && \
 /tmp/test; echo "Exit code: $?"
 ```
@@ -91,11 +91,11 @@ fn main() -> i32 {
 
 All test files are in the `tests/` directory:
 
-- **while_basic.apex** - While loop test
-- **for_basic.apex** - For loop test
-- **mut_basic.apex** - Mutable variables
-- **struct_basic.apex** - Struct types
-- **range_basic.apex** - Range expressions
+- **while_basic.apx** - While loop test
+- **for_basic.apx** - For loop test
+- **mut_basic.apx** - Mutable variables
+- **struct_basic.apx** - Struct types
+- **range_basic.apx** - Range expressions
 
 ## Current Known Issues
 
@@ -107,7 +107,7 @@ All test files are in the `tests/` directory:
 ## Compiler Options
 
 ```bash
-./build/src/apexc/apexc [options] <input.apex>
+./build/src/apexc/apexc [options] <input.apx>
 
 Options:
   -o <file>       Output file (default: a.out)
