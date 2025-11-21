@@ -225,6 +225,7 @@ llvm::Function* LLVMCodeGen::codegen_function(ast::Item* func) {
         
         // Add parameters to symbol table
         named_values_.clear();
+        named_allocas_.clear();  // Clear allocas for new function
         for (auto& arg : llvm_func->args()) {
             named_values_[std::string(arg.getName())] = &arg;
         }
