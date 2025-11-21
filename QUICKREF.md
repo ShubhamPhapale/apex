@@ -190,16 +190,16 @@ impl Printable for Point {
 
 ### Basic Compilation
 ```bash
-apexc program.apex              # Compile to program.o
-apexc -o output.o program.apex  # Specify output file
+apexc program.apx              # Compile to program.o
+apexc -o output.o program.apx  # Specify output file
 ```
 
 ### Debug Modes
 ```bash
-apexc --emit-tokens program.apex   # Show tokens
-apexc --emit-ast program.apex      # Show AST
-apexc --emit-llvm program.apex     # Generate LLVM IR
-apexc -v program.apex              # Verbose output
+apexc --emit-tokens program.apx   # Show tokens
+apexc --emit-ast program.apx      # Show AST
+apexc --emit-llvm program.apx     # Generate LLVM IR
+apexc -v program.apx              # Verbose output
 ```
 
 ### Help

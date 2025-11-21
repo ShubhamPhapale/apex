@@ -1,8 +1,10 @@
-# Apex Programming Language
+# Apex Systems Programming Language
 
-**A Modern Systems Programming Language for the Next Generation**
+**Low-Level Control with Modern Safety Guarantees**
 
-Apex is a C-like systems programming language designed to preserve the low-level control and performance characteristics of C while dramatically improving safety, tooling, and developer experience. Built for systems programming, embedded development, OS kernels, game engines, and high-performance computing.
+> **Note**: This is an independent systems programming language project. Not affiliated with or related to apexlang.io or any other Apex-named projects.
+
+Apex is a statically-typed systems programming language that combines C's low-level control with modern safety features. Designed for operating systems, embedded systems, device drivers, and performance-critical applications where manual memory management and zero-cost abstractions are essential.
 
 ## 🚀 Quick Start
 
@@ -15,10 +17,10 @@ cd apex
 ./build.sh
 
 # Compile your first program
-./build/src/apexc/apexc examples/hello.apex
+./build/src/apexc/apexc examples/hello.apx
 
 # Compile with verbose output
-./build/src/apexc/apexc -v examples/fibonacci.apex
+./build/src/apexc/apexc -v examples/fibonacci.apx
 ```
 
 ## 📖 Documentation Structure
@@ -102,9 +104,9 @@ Options:
 ./test.sh
 
 # Test individual examples
-./build/src/apexc/apexc examples/hello.apex
-./build/src/apexc/apexc examples/fibonacci.apex
-./build/src/apexc/apexc examples/struct.apex
+./build/src/apexc/apexc examples/hello.apx
+./build/src/apexc/apexc examples/fibonacci.apx
+./build/src/apexc/apexc examples/struct.apx
 ```
 
 ## 📂 Project Structure
@@ -118,7 +120,7 @@ apex/
 │   ├── sema/            # Semantic analysis
 │   ├── codegen/         # LLVM code generation
 │   └── main.cpp         # Compiler driver
-├── examples/            # Example Apex programs
+├── examples/            # Example programs (.apx files)
 ├── docs/                # Additional documentation
 ├── CMakeLists.txt       # Root build configuration
 ├── build.sh             # Build script

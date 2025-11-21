@@ -202,7 +202,7 @@ match name {
 | **C++** | Make, Autotools | ✅ | Many |
 | **Rust** | Cargo | ⚠️ Via cxx | build.rs |
 | **Zig** | build.zig | ⚠️ Experimental | - |
-| **Apex** | project.apex | ✅ | Make, Ninja |
+| **Apex** | project.apx | ✅ | Make, Ninja |
 
 ## 6. Learning Curve
 

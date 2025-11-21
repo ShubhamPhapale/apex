@@ -305,7 +305,7 @@ Apex replaces C's header system with a proper module system.
 
 **Module Declaration:**
 ```apex
-// File: math/vector.apex
+// File: math/vector.apx
 module math.vector;
 
 pub struct Vector3 {
@@ -350,13 +350,13 @@ let v2 = vec.Vector3 { x: 0.0, y: 1.0, z: 0.0 };
 Apex uses a module-based compilation model with incremental compilation support.
 
 **Compilation Unit:**
-- Each `.apex` file is a compilation unit
+- Each `.apx` file is a compilation unit
 - Modules can span multiple files in a directory structure
 - Incremental compilation tracks dependencies
 
 **Build Process:**
 ```apex
-// project.apex (build configuration)
+// project.apx (build configuration)
 project {
     name: "my_app",
     version: "1.0.0",
@@ -369,7 +369,7 @@ project {
     targets: {
         executable: {
             name: "my_app",
-            entry: "main.apex",
+            entry: "main.apx",
         },
     },
 }
@@ -377,7 +377,7 @@ project {
 
 **Separate Compilation:**
 - Modules compiled independently
-- Type information exported in `.apexmod` files
+- Type information exported in `.apxmod` files
 - Link-time optimization available
 
 ### Stack/Heap Allocation
@@ -629,14 +629,14 @@ void function() { /* ... */ }
 
 **Apex Solution:**
 ```apex
-// math.apex
+// math.apx
 module math;
 
 pub fn add(a: i32, b: i32) -> i32 {
     return a + b;
 }
 
-// main.apex
+// main.apx
 import math;
 
 fn main() {

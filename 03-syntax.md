@@ -581,7 +581,7 @@ impl ArenaAllocator {
 ### Module Definition
 
 ```apex
-// File: math/vector.apex
+// File: math/vector.apx
 module math.vector;
 
 pub struct Vector3 {
@@ -642,7 +642,7 @@ let v = Vector3 { x: 1.0, y: 2.0, z: 3.0 };
 ### Nested Modules
 
 ```apex
-// File: graphics/shapes/circle.apex
+// File: graphics/shapes/circle.apx
 module graphics.shapes.circle;
 
 pub struct Circle {

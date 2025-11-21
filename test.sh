@@ -49,20 +49,20 @@ run_test() {
 # Test tokenization
 echo ""
 echo "=== Lexer Tests ==="
-run_test "Tokenize hello.apex" "examples/hello.apex" 0
-run_test "Tokenize fibonacci.apex" "examples/fibonacci.apex" 0
-run_test "Tokenize struct.apex" "examples/struct.apex" 0
+run_test "Tokenize hello.apx" "examples/hello.apx" 0
+run_test "Tokenize fibonacci.apx" "examples/fibonacci.apx" 0
+run_test "Tokenize struct.apx" "examples/struct.apx" 0
 
 # Test parsing
 echo ""
 echo "=== Parser Tests ==="
-$APEXC --emit-ast examples/hello.apex > /dev/null 2>&1 && echo -e "${GREEN}Parser test PASS${NC}" || echo -e "${RED}Parser test FAIL${NC}"
+$APEXC --emit-ast examples/hello.apx > /dev/null 2>&1 && echo -e "${GREEN}Parser test PASS${NC}" || echo -e "${RED}Parser test FAIL${NC}"
 
 # Test code generation
 echo ""
 echo "=== Code Generation Tests ==="
-run_test "Generate LLVM IR for hello.apex" "examples/hello.apex" 0
-run_test "Generate object file for fibonacci.apex" "examples/fibonacci.apex" 0
+run_test "Generate LLVM IR for hello.apx" "examples/hello.apx" 0
+run_test "Generate object file for fibonacci.apx" "examples/fibonacci.apx" 0
 
 # Summary
 echo ""

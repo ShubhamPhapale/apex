@@ -105,7 +105,7 @@ TEST_CASE("Lexer tokenizes integers") {
 ### Integration Tests
 Place test files in `tests/integration/`:
 ```apex
-// tests/integration/test_arithmetic.apex
+// tests/integration/test_arithmetic.apx
 fn test_addition() {
     assert_eq(2 + 2, 4);
 }

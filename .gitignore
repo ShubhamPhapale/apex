@@ -36,4 +36,4 @@ benchmarks/results/
 .DS_Store
 
 # Apex generated
-*.apexmod
+*.apxmod

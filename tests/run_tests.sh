@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Test runner for Apex compiler
-# Runs all .apex files in tests/ and verifies exit codes
+# Runs all .apx files in tests/ and verifies exit codes
 
 set -e
 
@@ -38,7 +38,7 @@ get_expected_exit_code() {
 # Function to run a single test
 run_test() {
     local test_file=$1
-    local test_name=$(basename "$test_file" .apex)
+    local test_name=$(basename "$test_file" .apx)
     local expected=$(get_expected_exit_code "$test_file")
     
     if [ -z "$expected" ]; then
@@ -81,7 +81,7 @@ run_test() {
 }
 
 # Run all tests
-for test_file in $TESTS_DIR/*.apex; do
+for test_file in $TESTS_DIR/*.apx; do
     if [ -f "$test_file" ]; then
         run_test "$test_file"
     fi

@@ -27,9 +27,9 @@ void print_usage(const char* program_name) {
               << "  -v, --verbose      Enable verbose output\n"
               << "  -h, --help         Display this help message\n"
               << "\nExamples:\n"
-              << "  " << program_name << " hello.apex\n"
-              << "  " << program_name << " -o hello.o hello.apex\n"
-              << "  " << program_name << " --emit-llvm hello.apex\n";
+              << "  " << program_name << " hello.apx\n"
+              << "  " << program_name << " -o hello.o hello.apx\n"
+              << "  " << program_name << " --emit-llvm hello.apx\n";
 }
 
 CompilerOptions parse_args(int argc, char** argv) {

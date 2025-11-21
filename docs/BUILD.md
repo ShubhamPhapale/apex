@@ -1,4 +1,6 @@
-# Apex Programming Language - Build Instructions
+# Apex Systems Programming Language - Build Instructions
+
+> **Note**: Independent systems programming language project. Not affiliated with apexlang.io or other Apex projects.
 
 ## Prerequisites
 

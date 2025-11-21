@@ -18,20 +18,20 @@ The Apex compiler (`apexc`) is designed as a multi-phase compiler with emphasis 
 
 ```
 my_project/
-├── project.apex          # Project configuration
+├── project.apx          # Project configuration
 ├── src/
-│   ├── main.apex        # Entry point
-│   ├── lib.apex         # Library root
-│   └── module/
-│       ├── mod.apex     # Module declaration
-│       ├── types.apex   # Module subfile
-│       └── utils.apex   # Module subfile
+│   ├── main.apx        # Entry point
+│   ├── lib.apx         # Library root
+│   └── utils/
+│       ├── mod.apx     # Module declaration
+│       ├── types.apx   # Module subfile
+│       └── utils.apx   # Module subfile
 ├── tests/
-│   ├── unit_tests.apex
+│   ├── unit_tests.apx
 │   └── integration/
-│       └── test_api.apex
-├── examples/
-│   └── demo.apex
+│       └── test_api.apx
+└── examples/
+    └── demo.apx
 ├── build/               # Compiler output (generated)
 │   ├── debug/
 │   └── release/
@@ -403,7 +403,7 @@ apexc --lto -o my_program src/main.apex
 3. Invalidate dependent modules
 4. Reuse unchanged modules
 
-**Metadata Files (`.apexmod`):**
+**Metadata Files (`.apxmod`):**
 ```
 module_name: std.collections.vec
 dependencies: [std.mem, std.alloc]
@@ -415,14 +415,14 @@ timestamp: 2025-01-15T10:30:00Z
 **Build Process:**
 ```bash
 # First build
-apexc build src/main.apex
-# Compiles: main.apex, module_a.apex, module_b.apex
+apexc build src/main.apx
+# Compiles: main.apx, module_a.apx, module_b.apx
 
-# Edit module_b.apex
+# Edit module_b.apx
 # Second build
-apexc build src/main.apex
-# Compiles: module_b.apex, main.apex (depends on module_b)
-# Reuses: module_a.apex (unchanged)
+apexc build src/main.apx
+# Compiles: module_b.apx, main.apx (depends on module_b)
+# Reuses: module_a.apx (unchanged)
 ```
 
 ### Parallel Compilation

@@ -4,7 +4,9 @@
 
 **Apex** (Advanced Programming for Explicit eXecution)
 
-The name reflects the language's goal to reach the peak of systems programming by combining low-level control with high-level safety.
+> **Disambiguation**: This is an independent systems programming language project by Shubham Phapale, focused on operating systems and embedded development. Not related to apexlang.io (API/schema language) or any other Apex-named projects.
+
+The name reflects the language's goal to reach the peak of systems programming by combining low-level control with high-level safety. Source files use the `.apx` extension.
 
 ## Design Goals
 
