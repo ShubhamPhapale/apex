@@ -50,28 +50,28 @@ cmake .. -DCMAKE_BUILD_TYPE=Release -DAPEX_BUILD_TESTS=OFF
 
 ### Compile a simple program
 ```bash
-./build/src/apexc/apexc examples/hello.apex
+./build/src/apexc/apexc examples/hello.apx
 ```
 
 ### View LLVM IR
 ```bash
-./build/src/apexc/apexc --emit-llvm examples/hello.apex
+./build/src/apexc/apexc --emit-llvm examples/hello.apx
 cat hello.ll
 ```
 
 ### View tokens
 ```bash
-./build/src/apexc/apexc --emit-tokens examples/hello.apex
+./build/src/apexc/apexc --emit-tokens examples/hello.apx
 ```
 
 ### View AST
 ```bash
-./build/src/apexc/apexc --emit-ast examples/hello.apex
+./build/src/apexc/apexc --emit-ast examples/hello.apx
 ```
 
 ### Verbose output
 ```bash
-./build/src/apexc/apexc -v examples/hello.apex
+./build/src/apexc/apexc -v examples/hello.apx
 ```
 
 ## Installation
@@ -116,7 +116,7 @@ ctest --output-on-failure
 ```bash
 cmake .. -DCMAKE_BUILD_TYPE=Debug
 cmake --build .
-lldb ./src/apexc/apexc -- ../examples/hello.apex
+lldb ./src/apexc/apexc -- ../examples/hello.apx
 ```
 
 ### Code Style

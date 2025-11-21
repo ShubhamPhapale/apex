@@ -212,9 +212,9 @@ Object File (.o) or Executable
 ### Example Programs
 ```bash
 # All of these compile successfully:
-./build/src/apexc/apexc examples/hello.apex
-./build/src/apexc/apexc examples/fibonacci.apex
-./build/src/apexc/apexc examples/struct.apex
+./build/src/apexc/apexc examples/hello.apx
+./build/src/apexc/apexc examples/fibonacci.apx
+./build/src/apexc/apexc examples/struct.apx
 ```
 
 ---
