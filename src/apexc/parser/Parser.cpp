@@ -956,7 +956,9 @@ std::unique_ptr<ast::Expr> Parser::parse_for_expr() {
 std::unique_ptr<ast::Expr> Parser::parse_match_expr() {
     auto match_expr = std::make_unique<ast::Expr>(ast::ExprKind::Match, previous().location);
     
-    match_expr->match_expr = parse_expression();
+    // Parse the match value (don't allow struct literals here - just parse up to comparison)
+    // We need to avoid matching the { as a struct literal start
+    match_expr->match_expr = parse_logical_or();  // Parse without assignment/struct literals
     
     consume(TokenType::LBRACE, "Expected '{' after match expression");
     

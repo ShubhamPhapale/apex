@@ -669,6 +669,72 @@ llvm::Value* LLVMCodeGen::codegen_expr(ast::Expr* expr) {
         case ast::ExprKind::Continue:
             // TODO: Implement continue with proper loop context tracking
             return nullptr;
+        
+        case ast::ExprKind::Match: {
+            // match expr { pattern => value, ... }
+            // Simple implementation for integer/wildcard patterns
+            
+            if (!expr->match_expr) return nullptr;
+            
+            llvm::Value* match_value = codegen_expr(expr->match_expr.get());
+            if (!match_value) return nullptr;
+            
+            llvm::Function* function = builder_->GetInsertBlock()->getParent();
+            
+            // Create a variable to store the result
+            llvm::AllocaInst* result_alloca = builder_->CreateAlloca(
+                llvm::Type::getInt32Ty(*context_), nullptr, "match.result");
+            
+            // Create end block
+            llvm::BasicBlock* match_end = llvm::BasicBlock::Create(*context_, "match.end", function);
+            
+            llvm::BasicBlock* current_block = builder_->GetInsertBlock();
+            
+            // Generate code for each arm
+            for (size_t i = 0; i < expr->match_arms.size(); ++i) {
+                const auto& arm = expr->match_arms[i];
+                
+                llvm::BasicBlock* arm_body = llvm::BasicBlock::Create(*context_, "match.arm", function);
+                llvm::BasicBlock* arm_next = (i == expr->match_arms.size() - 1) 
+                    ? match_end 
+                    : llvm::BasicBlock::Create(*context_, "match.next", function);
+                
+                builder_->SetInsertPoint(current_block);
+                
+                // Pattern matching - simple version for wildcards and identifiers
+                if (arm.pattern && arm.pattern->kind == ast::PatternKind::Wildcard) {
+                    // Wildcard (_) always matches
+                    builder_->CreateBr(arm_body);
+                } else if (arm.pattern && arm.pattern->kind == ast::PatternKind::Identifier) {
+                    // Identifier pattern binds the value
+                    if (arm.pattern->binding_name) {
+                        named_values_[*arm.pattern->binding_name] = match_value;
+                    }
+                    builder_->CreateBr(arm_body);
+                } else {
+                    // Unknown pattern, skip to next arm
+                    builder_->CreateBr(arm_next);
+                }
+                
+                // Generate arm body
+                builder_->SetInsertPoint(arm_body);
+                llvm::Value* arm_result = codegen_expr(arm.body.get());
+                if (arm_result) {
+                    builder_->CreateStore(arm_result, result_alloca);
+                }
+                
+                // Jump to end (if not already terminated)
+                if (!builder_->GetInsertBlock()->getTerminator()) {
+                    builder_->CreateBr(match_end);
+                }
+                
+                current_block = arm_next;
+            }
+            
+            // Continue after match
+            builder_->SetInsertPoint(match_end);
+            return builder_->CreateLoad(llvm::Type::getInt32Ty(*context_), result_alloca, "match.value");
+        }
             
         default:
             // TODO: Handle other expression kinds

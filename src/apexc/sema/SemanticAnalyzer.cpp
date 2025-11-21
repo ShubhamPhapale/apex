@@ -292,8 +292,24 @@ void SemanticAnalyzer::analyze_expr(ast::Expr* expr) {
         case ast::ExprKind::Match:
             analyze_expr(expr->match_expr.get());
             for (auto& arm : expr->match_arms) {
-                analyze_pattern(arm.pattern.get());
+                // Create new scope for each match arm
+                push_scope();
+                
+                // Bind pattern variables
+                if (arm.pattern && arm.pattern->kind == ast::PatternKind::Identifier) {
+                    if (arm.pattern->binding_name) {
+                        Symbol symbol;
+                        symbol.name = *arm.pattern->binding_name;
+                        symbol.type = nullptr; // TODO: Infer from match expression
+                        symbol.is_mutable = false; // Pattern bindings are immutable
+                        symbol.is_initialized = true;
+                        symbol.location = arm.pattern->location;
+                        current_scope_->define(symbol.name, std::move(symbol));
+                    }
+                }
+                
                 analyze_expr(arm.body.get());
+                pop_scope();
             }
             break;
             
