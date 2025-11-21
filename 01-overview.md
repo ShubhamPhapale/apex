@@ -204,4 +204,7 @@ Apex will be considered successful if it achieves:
 
 ---
 
+**Author**: Shubham Phapale  
+**Repository**: https://github.com/ShubhamPhapale/apex  
+
 **Next**: [02-features.md](02-features.md) - Comprehensive Feature Specification

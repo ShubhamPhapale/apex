@@ -745,4 +745,7 @@ size_of::<[Unit; 1000000]>() == 0  // No allocation!
 
 ---
 
-**Next**: [06-compilation.md](06-compilation.md) - Compilation Workflow and Architecture
+**Author**: Shubham Phapale  
+**Repository**: https://github.com/ShubhamPhapale/apex  
+
+**Next**: [06-compilation.md](06-compilation.md) - Compilation Process and Architecture

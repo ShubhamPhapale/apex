@@ -432,4 +432,7 @@ fn new_apex_code() {
 
 ---
 
+**Author**: Shubham Phapale  
+**Repository**: https://github.com/ShubhamPhapale/apex  
+
 **Next**: [10-roadmap.md](10-roadmap.md) - Future Evolution Roadmap

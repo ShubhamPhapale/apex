@@ -901,4 +901,7 @@ apexc -O2 -o http_client c_interop.apex -lcurl
 
 ---
 
+**Author**: Shubham Phapale  
+**Repository**: https://github.com/ShubhamPhapale/apex  
+
 **Next**: [09-comparison.md](09-comparison.md) - Language Comparison Matrix

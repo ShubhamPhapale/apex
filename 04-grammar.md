@@ -638,4 +638,7 @@ fn documented_function() { }
 
 ---
 
+**Author**: Shubham Phapale  
+**Repository**: https://github.com/ShubhamPhapale/apex  
+
 **Next**: [05-memory-model.md](05-memory-model.md) - Memory Model and Safety Rules

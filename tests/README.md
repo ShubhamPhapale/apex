@@ -39,17 +39,22 @@ The test runner will:
 
 ## Test Results
 
-All tests currently pass:
+All 16 tests currently pass:
 ```
 ✓ PASS assignment (exit code: 42)
 ✓ PASS for_basic (exit code: 45)
 ✓ PASS for_nested (exit code: 18)
+✓ PASS match_basic (exit code: 42)
+✓ PASS match_identifier (exit code: 151)
+✓ PASS match_no_parens (exit code: 42)
+✓ PASS match_wildcard (exit code: 99)
 ✓ PASS mut_basic (exit code: 30)
 ✓ PASS mut_multiple (exit code: 14)
 ✓ PASS range_basic (exit code: 3)
 ✓ PASS range_offset (exit code: 33)
 ✓ PASS struct_basic (exit code: 25)
 ✓ PASS struct_nested (exit code: 80)
+✓ PASS struct_nested_literal (exit code: 30)
 ✓ PASS while_basic (exit code: 45)
 ✓ PASS while_nested (exit code: 12)
 ```
@@ -61,15 +66,19 @@ All tests currently pass:
 - ✅ Mutable variables with `mut` keyword
 - ✅ Range expressions (`..` operator)
 - ✅ Struct type definitions
-- ✅ Struct literals
+- ✅ Struct literals (including nested)
 - ✅ Field access
 - ✅ Nested structs
 - ✅ Nested loops
 - ✅ Arithmetic operations
 - ✅ Comparison operations
 - ✅ Assignment operator (`=`) for mutable variables
+- ✅ Match expressions with patterns
+- ✅ Match wildcard patterns (`_`)
+- ✅ Match identifier patterns
+- ✅ Match without parentheses
 
-## Known Limitations
+---
 
-- Nested struct literals not yet supported (workaround: use intermediate variables)
-- Mutable variables must be declared with `let mut` syntax
+**Author:** Shubham Phapale  
+**Repository:** https://github.com/ShubhamPhapale/apex

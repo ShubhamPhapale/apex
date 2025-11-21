@@ -148,9 +148,14 @@ Ensure you're using a C++20 compatible compiler:
 ## Getting Help
 
 - Documentation: See `docs/` directory
-- Issues: Report bugs via GitHub Issues
-- Discussions: Use GitHub Discussions for questions
+- Issues: https://github.com/ShubhamPhapale/apex/issues
+- Discussions: https://github.com/ShubhamPhapale/apex/discussions
 
 ## License
 
 MIT License - See LICENSE file for details
+
+---
+
+**Author**: Shubham Phapale  
+**Repository**: https://github.com/ShubhamPhapale/apex

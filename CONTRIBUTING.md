@@ -4,7 +4,7 @@ Thank you for your interest in contributing to Apex! This document provides guid
 
 ## Getting Started
 
-1. Fork the repository
+1. Fork the repository from https://github.com/ShubhamPhapale/apex
 2. Clone your fork: `git clone https://github.com/YOUR_USERNAME/apex.git`
 3. Create a branch: `git checkout -b feature/your-feature-name`
 4. Make your changes
@@ -193,9 +193,14 @@ Include:
 ## Questions?
 
 - Open a GitHub Discussion for questions
-- Join our Discord server (link in README)
-- Email: dev@apex-lang.org
+- GitHub Issues: https://github.com/ShubhamPhapale/apex/issues
+- Contact: Shubham Phapale
 
 ## License
 
 By contributing, you agree that your contributions will be licensed under the MIT License.
+
+---
+
+**Maintainer**: Shubham Phapale  
+**Repository**: https://github.com/ShubhamPhapale/apex

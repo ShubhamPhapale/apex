@@ -1096,4 +1096,7 @@ project {
 
 ---
 
+**Author**: Shubham Phapale  
+**Repository**: https://github.com/ShubhamPhapale/apex  
+
 **Next**: [04-grammar.md](04-grammar.md) - Formal EBNF Grammar

@@ -159,7 +159,7 @@ apx add <package>        Add dependency
 apx update               Update dependencies
 ```
 
-**Package Registry:** https://pkg.apex-lang.org
+**Package Registry:** (Planned)
 
 ### Documentation (v1.0)
 
@@ -679,12 +679,13 @@ Apex aims to be **the modern C** - combining the low-level control and performan
 
 **Join us in building the future of systems programming!**
 
-- Website: https://apex-lang.org
-- GitHub: https://github.com/apex-lang/apex
-- Forum: https://forum.apex-lang.org
-- Discord: https://discord.gg/apex-lang
-- Twitter: @apex_lang
-
+- GitHub: https://github.com/ShubhamPhapale/apex
+- Author: Shubham Phapale
+- Issues: https://github.com/ShubhamPhapale/apex/issues
+- Discussions: https://github.com/ShubhamPhapale/apex/discussions
 ---
+
+**Author**: Shubham Phapale  
+**Repository**: https://github.com/ShubhamPhapale/apex  
 
 **End of Specification**

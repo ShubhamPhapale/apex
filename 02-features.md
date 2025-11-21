@@ -1019,4 +1019,7 @@ let dist = p1.distance(p2);  // Method call syntax
 
 ---
 
+**Author**: Shubham Phapale  
+**Repository**: https://github.com/ShubhamPhapale/apex  
+
 **Next**: [03-syntax.md](03-syntax.md) - Complete Syntax Examples

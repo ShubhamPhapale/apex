@@ -8,7 +8,7 @@ Apex is a C-like systems programming language designed to preserve the low-level
 
 ```bash
 # Clone the repository
-git clone https://github.com/apex-lang/apex.git
+git clone https://github.com/ShubhamPhapale/apex.git
 cd apex
 
 # Build the compiler (requires LLVM 14+)
@@ -151,6 +151,8 @@ apex/
 
 ---
 
+**Author**: Shubham Phapale  
+**GitHub**: https://github.com/ShubhamPhapale/apex  
 **Status**: Alpha - Core compiler functional, standard library in progress  
 **License**: MIT  
 **Version**: 1.0.0-alpha

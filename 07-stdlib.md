@@ -838,4 +838,7 @@ pub fn abort() -> !;
 
 ---
 
-**Next**: [08-examples.md](08-examples.md) - Complete Example Applications
+**Author**: Shubham Phapale  
+**Repository**: https://github.com/ShubhamPhapale/apex  
+
+**Next**: [08-examples.md](08-examples.md) - Complete Example Programs

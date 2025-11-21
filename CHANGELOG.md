@@ -141,3 +141,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Full documentation
 
 For more details, see [10-roadmap.md](10-roadmap.md).
+
+---
+
+**Author**: Shubham Phapale  
+**Repository**: https://github.com/ShubhamPhapale/apex

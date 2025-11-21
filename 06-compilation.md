@@ -845,4 +845,7 @@ project {
 
 ---
 
+**Author**: Shubham Phapale  
+**Repository**: https://github.com/ShubhamPhapale/apex  
+
 **Next**: [07-stdlib.md](07-stdlib.md) - Standard Library Specification

@@ -304,4 +304,7 @@ fn process_file(path: &str) {
 
 ---
 
+**Author**: Shubham Phapale  
+**Repository**: https://github.com/ShubhamPhapale/apex  
+
 For complete documentation, see the full language specification files.

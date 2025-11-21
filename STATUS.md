@@ -1,6 +1,8 @@
 # Apex Compiler - Implementation Status
 
-**Last Updated:** January 2025  
+**Author:** Shubham Phapale  
+**Repository:** https://github.com/ShubhamPhapale/apex  
+**Last Updated:** November 2025  
 **Version:** 1.0.0-alpha
 
 ## Overview

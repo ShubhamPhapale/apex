@@ -417,7 +417,9 @@ This implementation demonstrates:
 
 ---
 
+**Author:** Shubham Phapale  
+**Repository:** https://github.com/ShubhamPhapale/apex  
 **Status:** ✅ COMPLETE - Alpha release ready  
 **Version:** 1.0.0-alpha  
-**Date:** January 2025  
+**Date:** November 2025  
 **Lines of Code:** 3,500+ C++, 70,000+ words documentation
