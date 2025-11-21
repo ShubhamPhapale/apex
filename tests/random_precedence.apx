@@ -1,0 +1,70 @@
+// Random test: Expression precedence and associativity
+// Expected: 142
+fn main() -> i32 {
+    let mut result: i32 = 0;
+    
+    // Multiplication before addition
+    let prec1: i32 = 2 + 3 * 4;  // 2 + 12 = 14
+    result = result + prec1;  // 14
+    
+    // Division before subtraction
+    let prec2: i32 = 20 - 10 / 2;  // 20 - 5 = 15
+    result = result + prec2;  // 14 + 15 = 29
+    
+    // Parentheses override precedence
+    let prec3: i32 = (2 + 3) * 4;  // 5 * 4 = 20
+    result = result + prec3;  // 29 + 20 = 49
+    
+    // Left-to-right associativity for same precedence
+    let assoc1: i32 = 10 - 3 - 2;  // (10 - 3) - 2 = 5
+    result = result + assoc1;  // 49 + 5 = 54
+    
+    // Complex expression
+    let complex1: i32 = 2 * 3 + 4 * 5 - 6 / 2;  // 6 + 20 - 3 = 23
+    result = result + complex1;  // 54 + 23 = 77
+    
+    // Nested parentheses
+    let nested_paren: i32 = ((2 + 3) * (4 + 5)) - 10;  // (5 * 9) - 10 = 35
+    result = result + nested_paren;  // 77 + 35 = 112
+    
+    // Comparison operators
+    let comp1: i32 = if 3 + 2 > 4 {
+        10
+    } else {
+        5
+    };
+    result = result + comp1;  // 112 + 10 = 122
+    
+    // Comparison with arithmetic
+    let comp2: i32 = if 10 / 2 == 5 {
+        8
+    } else {
+        0
+    };
+    result = result + comp2;  // 122 + 8 = 130
+    
+    // Multiple comparisons in if-else chain
+    let multi_comp: i32 = if 5 > 10 {
+        1
+    } else {
+        if 3 < 2 {
+            2
+        } else {
+            if 4 == 4 {
+                7
+            } else {
+                3
+            }
+        }
+    };
+    result = result + multi_comp;  // 130 + 7 = 137
+    
+    // Expression in match
+    let match_expr: i32 = match (2 + 3) * 2 {
+        10 => 5,
+        _ => 0,
+    };
+    result = result + match_expr;  // 137 + 5 = 142
+    
+    return result;
+}

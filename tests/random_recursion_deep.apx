@@ -1,0 +1,66 @@
+// Random test: Deep recursion and stack usage
+// Expected: 233
+fn sum_recursive(n: i32, acc: i32) -> i32 {
+    if n <= 0 {
+        return acc;
+    } else {
+        return sum_recursive(n - 1, acc + n);
+    }
+}
+
+fn factorial_limited(n: i32) -> i32 {
+    if n <= 1 {
+        return 1;
+    } else {
+        if n > 5 {
+            return 120;  // 5! = 120, limit to prevent overflow
+        } else {
+            return n * factorial_limited(n - 1);
+        }
+    }
+}
+
+fn count_down(n: i32) -> i32 {
+    if n <= 0 {
+        return 0;
+    } else {
+        return 1 + count_down(n - 1);
+    }
+}
+
+fn main() -> i32 {
+    let mut total: i32 = 0;
+    
+    // Tail-recursive sum: sum(10) = 1+2+...+10 = 55
+    total = total + sum_recursive(10, 0);  // 55
+    
+    // Limited factorial: 5! = 120
+    total = total + factorial_limited(5);  // 55 + 120 = 175
+    
+    // Count down recursion
+    total = total + count_down(20);  // 175 + 20 = 195
+    
+    // Nested recursive calls
+    let nested: i32 = sum_recursive(5, 0) + factorial_limited(3);  // 15 + 6 = 21
+    total = total + nested;  // 195 + 21 = 216
+    
+    // Recursive in loop
+    let mut loop_rec: i32 = 0;
+    for i in 1..4 {
+        loop_rec = loop_rec + count_down(i);  // 1 + 2 + 3 = 6
+    }
+    total = total + loop_rec;  // 216 + 6 = 222
+    
+    // Recursive in match
+    let match_rec: i32 = match 3 {
+        0 => factorial_limited(0),
+        1 => factorial_limited(1),
+        2 => factorial_limited(2),
+        3 => factorial_limited(3),
+        _ => 0,
+    };  // 3! = 6
+    total = total + match_rec;  // 222 + 6 = 228
+    
+    // Final calculation
+    return total + 5;  // 228 + 5 = 233
+}

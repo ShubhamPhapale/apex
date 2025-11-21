@@ -1,0 +1,103 @@
+// Random test: Edge cases and boundary conditions
+// Expected: 255
+fn div_by_zero_check(a: i32, b: i32) -> i32 {
+    if b == 0 {
+        return 0;
+    } else {
+        return a / b;
+    }
+}
+
+fn main() -> i32 {
+    let mut result: i32 = 0;
+    
+    // Zero handling
+    let zero: i32 = 0;
+    result = result + zero;  // 0
+    
+    // Negative numbers (wraps to positive due to 8-bit)
+    let neg: i32 = 0 - 5;  // -5
+    let pos: i32 = 10;
+    result = result + pos + neg;  // 0 + 10 - 5 = 5
+    
+    // Division by zero protection
+    result = result + div_by_zero_check(100, 0);  // 5 + 0 = 5
+    result = result + div_by_zero_check(100, 5);  // 5 + 20 = 25
+    
+    // Large numbers (modulo 256)
+    let large: i32 = 300;  // Will be 44 (300 % 256)
+    
+    // Boundary for loop
+    for i in 0..0 {
+        result = result + 1;  // Should not execute
+    }
+    
+    // Single iteration loop
+    for i in 0..1 {
+        result = result + 5;  // 25 + 5 = 30
+    }
+    
+    // Match with zero
+    let match_zero: i32 = match 0 {
+        0 => 10,
+        _ => 20,
+    };
+    result = result + match_zero;  // 30 + 10 = 40
+    
+    // Empty block
+    let empty_block: i32 = {
+        50
+    };
+    result = result + empty_block;  // 40 + 50 = 90
+    
+    // Nested empty blocks
+    let nested_empty: i32 = {
+        {
+            {
+                25
+            }
+        }
+    };
+    result = result + nested_empty;  // 90 + 25 = 115
+    
+    // While false (should not execute)
+    let mut while_false: i32 = 0;
+    while 0 > 1 {
+        while_false = while_false + 1;
+    }
+    result = result + while_false;  // 115 + 0 = 115
+    
+    // Match all cases including wildcard
+    let mut match_sum: i32 = 0;
+    for i in 0..10 {
+        let val: i32 = match i {
+            0 => 1,
+            1 => 2,
+            2 => 3,
+            _ => 4,
+        };
+        match_sum = match_sum + val;  // 1+2+3+4*7 = 34
+    }
+    result = result + match_sum;  // 115 + 34 = 149
+    
+    // Deep if-else with same result
+    let same: i32 = if result > 100 {
+        if result > 140 {
+            if result > 148 {
+                53
+            } else {
+                53
+            }
+        } else {
+            53
+        }
+    } else {
+        53
+    };
+    result = result + same;  // 149 + 53 = 202
+    
+    // Final additions to reach 255
+    result = result + 53;  // 202 + 53 = 255
+    
+    return result;
+}
