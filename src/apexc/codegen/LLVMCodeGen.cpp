@@ -260,13 +260,17 @@ llvm::Function* LLVMCodeGen::codegen_function(ast::Item* func) {
 
 llvm::StructType* LLVMCodeGen::codegen_struct(ast::Item* struct_item) {
     std::vector<llvm::Type*> field_types;
+    std::unordered_map<std::string, unsigned> field_indices;
     
+    unsigned idx = 0;
     for (auto& field : struct_item->struct_fields) {
         field_types.push_back(codegen_type(field.type.get()));
+        field_indices[field.name] = idx++;
     }
     
     llvm::StructType* struct_type = llvm::StructType::create(*context_, field_types, struct_item->name);
     structs_[struct_item->name] = struct_type;
+    struct_fields_[struct_item->name] = field_indices;
     
     return struct_type;
 }
@@ -593,6 +597,69 @@ llvm::Value* LLVMCodeGen::codegen_expr(ast::Expr* expr) {
             
             // TODO: Handle general iterators
             return nullptr;
+        }
+        
+        case ast::ExprKind::StructLiteral: {
+            // Get the struct type
+            std::string struct_name = expr->struct_path.empty() ? "" : expr->struct_path[0];
+            auto struct_it = structs_.find(struct_name);
+            if (struct_it == structs_.end()) {
+                return nullptr; // Struct type not found
+            }
+            
+            llvm::StructType* struct_type = struct_it->second;
+            auto& field_map = struct_fields_[struct_name];
+            
+            // Create alloca for the struct
+            llvm::AllocaInst* struct_alloca = builder_->CreateAlloca(struct_type, nullptr, "struct.tmp");
+            
+            // Initialize fields
+            for (auto& field_init : expr->fields) {
+                auto field_it = field_map.find(field_init.name);
+                if (field_it == field_map.end()) continue;
+                
+                unsigned field_idx = field_it->second;
+                llvm::Value* field_value = codegen_expr(field_init.value.get());
+                if (!field_value) continue;
+                
+                // Get pointer to field using GEP
+                llvm::Value* field_ptr = builder_->CreateStructGEP(struct_type, struct_alloca, field_idx, field_init.name);
+                builder_->CreateStore(field_value, field_ptr);
+            }
+            
+            // Load and return the complete struct
+            return builder_->CreateLoad(struct_type, struct_alloca, "struct.val");
+        }
+        
+        case ast::ExprKind::FieldAccess: {
+            // Get the object value
+            llvm::Value* obj_val = codegen_expr(expr->object.get());
+            if (!obj_val) return nullptr;
+            
+            // Get the struct type
+            llvm::Type* obj_type = obj_val->getType();
+            if (!obj_type->isStructTy()) {
+                return nullptr; // Not a struct
+            }
+            
+            llvm::StructType* struct_type = llvm::cast<llvm::StructType>(obj_type);
+            std::string struct_name = struct_type->getName().str();
+            
+            // Find field index
+            auto fields_it = struct_fields_.find(struct_name);
+            if (fields_it == struct_fields_.end()) {
+                return nullptr;
+            }
+            
+            auto field_it = fields_it->second.find(expr->field_name);
+            if (field_it == fields_it->second.end()) {
+                return nullptr; // Field not found
+            }
+            
+            unsigned field_idx = field_it->second;
+            
+            // Extract field value
+            return builder_->CreateExtractValue(obj_val, field_idx, expr->field_name);
         }
         
         case ast::ExprKind::Break:

@@ -31,6 +31,7 @@ private:
     std::unordered_map<std::string, llvm::AllocaInst*> named_allocas_; // Mutable variables
     std::unordered_map<std::string, llvm::Function*> functions_;
     std::unordered_map<std::string, llvm::StructType*> structs_;
+    std::unordered_map<std::string, std::unordered_map<std::string, unsigned>> struct_fields_; // struct_name -> {field_name -> index}
     
     // Code generation
     llvm::Value* codegen_expr(ast::Expr* expr);
