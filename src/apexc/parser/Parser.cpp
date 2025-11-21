@@ -196,7 +196,17 @@ std::vector<ast::FunctionParam> Parser::parse_function_params() {
         do {
             ast::FunctionParam param;
             param.location = peek().location;
-            param.name = consume(TokenType::IDENTIFIER, "Expected parameter name").lexeme;
+            
+            // Parse parameter pattern (supports 'mut identifier')
+            auto pattern = parse_pattern();
+            if (pattern && pattern->kind == ast::PatternKind::Identifier && pattern->binding_name) {
+                param.name = *pattern->binding_name;
+                param.is_mutable = pattern->is_mutable;
+            } else {
+                error("Function parameters must be identifiers");
+                param.name = "<error>";
+            }
+            
             consume(TokenType::COLON, "Expected ':' after parameter name");
             param.type = parse_type();
             params.push_back(std::move(param));

@@ -239,6 +239,7 @@ enum class Visibility {
 struct FunctionParam {
     std::string name;
     std::unique_ptr<Type> type;
+    bool is_mutable = false;
     SourceLocation location;
 };
 

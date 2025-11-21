@@ -1,0 +1,33 @@
+// Debug match to find which part returns wrong value
+fn classify(n: i32) -> i32 {
+    match n {
+        0 => 100,
+        1 => 110,
+        2 => 120,
+        3 => 130,
+        _ => 999,
+    }
+}
+
+fn main() -> i32 {
+    // Test 1: Simple match
+    let result1: i32 = match 0 {
+        0 => 10,
+        1 => 20,
+        _ => 50,
+    };
+    
+    // Test 2: Match with arithmetic  
+    let result2: i32 = match 1 + 1 {
+        0 => 0,
+        1 => 1,
+        2 => 5,
+        _ => 10,
+    };
+    
+    // Test 3: Function call
+    let result3: i32 = classify(1);
+    
+    // Return sum - should be 10 + 5 + 110 = 125
+    return result1 + result2 + result3;
+}

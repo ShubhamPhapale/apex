@@ -1,0 +1,9 @@
+fn get_value() -> i32 {
+    return 110;
+}
+
+fn main() -> i32 {
+    let sum: i32 = 150;
+    let x: i32 = get_value();
+    return sum + x;
+}

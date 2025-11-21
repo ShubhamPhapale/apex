@@ -1,0 +1,23 @@
+fn classify(n: i32) -> i32 {
+    match n {
+        0 => 100,
+        1 => 110,
+        _ => 999,
+    }
+}
+
+fn main() -> i32 {
+    let mut sum: i32 = 0;
+    
+    for i in 0..2 {
+        let result: i32 = match i {
+            0 => 10,
+            _ => 20,
+        };
+        sum = sum + result;
+    }
+    
+    let x: i32 = classify(1);
+    
+    return sum + x;  // Should be 30 + 110 = 140
+}
