@@ -1,0 +1,9 @@
+fn main() -> i32 {
+    let a = 10;
+    let result1 = if a < 20 {
+        50
+    } else {
+        30
+    };
+    result1
+}
