@@ -1,0 +1,24 @@
+// Edge case test: Large numbers (within i32 range)
+// Expected: 72
+fn main() -> i32 {
+    // Large positive numbers
+    let a: i32 = 1000000;
+    let b: i32 = 2000000;
+    
+    // Large arithmetic (ensure no overflow in our tests)
+    let c: i32 = 10000 + 20000;  // 30000
+    let d: i32 = 50000 - 10000;  // 40000
+    
+    // Large in comparisons (use statements)
+    let mut g: i32 = 0;
+    if a > 999999 {
+        g = 1;
+    }  // 1
+    let mut h: i32 = 0;
+    if b < 3000000 {
+        h = 1;
+    }  // 1
+    
+    // Return simple sum to avoid complex expressions
+    return (c / 1000) + (d / 1000) + g + h;  // 30 + 40 + 1 + 1 = 72
+}

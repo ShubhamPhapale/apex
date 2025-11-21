@@ -411,58 +411,64 @@ llvm::Value* LLVMCodeGen::codegen_expr(ast::Expr* expr) {
         }
             
         case ast::ExprKind::If: {
+            // Evaluate condition
             llvm::Value* cond_val = codegen_expr(expr->condition.get());
             if (!cond_val) return nullptr;
             
             llvm::Function* func = builder_->GetInsertBlock()->getParent();
+            if (!func) return nullptr;
+            
+            // Create result storage (using proven match-expression pattern)
+            llvm::AllocaInst* result_alloca = builder_->CreateAlloca(
+                llvm::Type::getInt32Ty(*context_), nullptr, "if.result");
+            
+            // Create basic blocks (then_bb inserted immediately, others added later)
             llvm::BasicBlock* then_bb = llvm::BasicBlock::Create(*context_, "then", func);
             llvm::BasicBlock* else_bb = llvm::BasicBlock::Create(*context_, "else");
             llvm::BasicBlock* merge_bb = llvm::BasicBlock::Create(*context_, "ifcont");
             
+            // Branch on condition
             builder_->CreateCondBr(cond_val, then_bb, else_bb);
             
             // Then branch
             builder_->SetInsertPoint(then_bb);
+            if (!expr->then_branch) return nullptr;
             llvm::Value* then_val = codegen_expr(expr->then_branch.get());
             bool then_returns = builder_->GetInsertBlock()->getTerminator() != nullptr;
+            if (then_val && !then_returns) {
+                builder_->CreateStore(then_val, result_alloca);
+            }
             if (!then_returns) {
                 builder_->CreateBr(merge_bb);
             }
-            then_bb = builder_->GetInsertBlock();
             
-            // Else branch
+            // Else branch  
             func->insert(func->end(), else_bb);
             builder_->SetInsertPoint(else_bb);
-            llvm::Value* else_val = nullptr;
+            bool else_returns = false;
             if (expr->else_branch) {
-                else_val = codegen_expr(expr->else_branch.get());
+                llvm::Value* else_val = codegen_expr(expr->else_branch.get());
+                else_returns = builder_->GetInsertBlock()->getTerminator() != nullptr;
+                if (else_val && !else_returns) {
+                    builder_->CreateStore(else_val, result_alloca);
+                }
             }
-            bool else_returns = builder_->GetInsertBlock()->getTerminator() != nullptr;
             if (!else_returns) {
                 builder_->CreateBr(merge_bb);
             }
-            else_bb = builder_->GetInsertBlock();
             
-            // Merge - only if at least one branch doesn't return
+            // Merge and load result (only if at least one branch doesn't return)
             if (!then_returns || !else_returns) {
                 func->insert(func->end(), merge_bb);
                 builder_->SetInsertPoint(merge_bb);
-                
-                // Create PHI node if both branches produce values and don't return
-                if (!then_returns && !else_returns && then_val && else_val && 
-                        then_val->getType() == else_val->getType()) {
-                    llvm::PHINode* phi = builder_->CreatePHI(then_val->getType(), 2, "iftmp");
-                    phi->addIncoming(then_val, then_bb);
-                    phi->addIncoming(else_val, else_bb);
-                    return phi;
-                }
+                return builder_->CreateLoad(llvm::Type::getInt32Ty(*context_), 
+                                           result_alloca, "if.value");
             } else {
-                // Both branches return - merge block is unreachable, don't create it
+                // Both branches return - merge block is unreachable, delete it
                 delete merge_bb;
-                // Builder is left pointing to the else block (which is terminated)
-                // This is fine - subsequent code is unreachable
             }
             
+            // Both branches return - no merge needed
             return nullptr;
         }
             
@@ -701,7 +707,7 @@ llvm::Value* LLVMCodeGen::codegen_expr(ast::Expr* expr) {
                 
                 builder_->SetInsertPoint(current_block);
                 
-                // Pattern matching - simple version for wildcards and identifiers
+                // Pattern matching - simple version for wildcards, identifiers, and literals
                 if (arm.pattern && arm.pattern->kind == ast::PatternKind::Wildcard) {
                     // Wildcard (_) always matches
                     builder_->CreateBr(arm_body);
@@ -711,6 +717,23 @@ llvm::Value* LLVMCodeGen::codegen_expr(ast::Expr* expr) {
                         named_values_[*arm.pattern->binding_name] = match_value;
                     }
                     builder_->CreateBr(arm_body);
+                } else if (arm.pattern && arm.pattern->kind == ast::PatternKind::Literal) {
+                    // Literal pattern - compare match value with literal
+                    if (arm.pattern->literal_value) {
+                        auto& lit_val = *arm.pattern->literal_value;
+                        if (std::holds_alternative<int64_t>(lit_val)) {
+                            llvm::Value* pattern_val = llvm::ConstantInt::get(
+                                llvm::Type::getInt32Ty(*context_), 
+                                std::get<int64_t>(lit_val));
+                            llvm::Value* cmp = builder_->CreateICmpEQ(match_value, pattern_val, "match.cmp");
+                            builder_->CreateCondBr(cmp, arm_body, arm_next);
+                        } else {
+                            // Non-integer literals not yet supported
+                            builder_->CreateBr(arm_next);
+                        }
+                    } else {
+                        builder_->CreateBr(arm_next);
+                    }
                 } else {
                     // Unknown pattern, skip to next arm
                     builder_->CreateBr(arm_next);

@@ -1,0 +1,33 @@
+// Edge case test: Single value operations
+// Expected: 217
+
+struct OneField {
+    pub value: i32,
+}
+
+fn main() -> i32 {
+    // Single value
+    let a: i32 = 42;
+    
+    // Single element range
+    let mut count: i32 = 0;
+    for i in 5..6 {
+        count = count + i;
+    }  // count = 5
+    
+    // Single match arm
+    let b: i32 = match 10 {
+        x => x * 2,
+    };  // 20
+    
+    // Single statement block
+    let c: i32 = {
+        100
+    };
+    
+    // Single field struct
+    let p: OneField = OneField { value: 50 };
+    let d: i32 = p.value;
+    
+    return a + count + b + c + d;  // 42 + 5 + 20 + 100 + 50 = 217
+}

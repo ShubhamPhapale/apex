@@ -1249,7 +1249,21 @@ std::unique_ptr<ast::Pattern> Parser::parse_pattern_primary() {
                TokenType::STRING_LITERAL, TokenType::CHAR_LITERAL,
                TokenType::KW_TRUE, TokenType::KW_FALSE})) {
         auto pat = std::make_unique<ast::Pattern>(ast::PatternKind::Literal, previous().location);
-        // TODO: Set literal value
+        
+        // Set literal value based on token type
+        Token lit_token = previous();
+        if (lit_token.type == TokenType::INTEGER_LITERAL) {
+            pat->literal_value = std::stoll(lit_token.lexeme);
+        } else if (lit_token.type == TokenType::FLOAT_LITERAL) {
+            pat->literal_value = std::stod(lit_token.lexeme);
+        } else if (lit_token.type == TokenType::STRING_LITERAL) {
+            pat->literal_value = lit_token.lexeme;
+        } else if (lit_token.type == TokenType::KW_TRUE) {
+            pat->literal_value = true;
+        } else if (lit_token.type == TokenType::KW_FALSE) {
+            pat->literal_value = false;
+        }
+        
         return pat;
     }
     

@@ -1,0 +1,74 @@
+// Stress test: Comparison operators
+// Expected: 10
+fn main() -> i32 {
+    let a: i32 = 10;
+    let b: i32 = 20;
+    let c: i32 = 10;
+    
+    // Test all comparison operators (using statements not expressions)
+    let mut eq: i32 = 0;
+    if a == c {
+        eq = 1;
+    }  // 1
+    
+    let mut ne: i32 = 0;
+    if a != b {
+        ne = 1;
+    }  // 1
+    
+    let mut lt: i32 = 0;
+    if a < b {
+        lt = 1;
+    }  // 1
+    
+    let mut le: i32 = 0;
+    if a <= c {
+        le = 1;
+    }  // 1
+    
+    let mut gt: i32 = 0;
+    if b > a {
+        gt = 1;
+    }  // 1
+    
+    let mut ge: i32 = 0;
+    if c >= a {
+        ge = 1;
+    }  // 1
+    
+    // Test logical AND using nested if
+    let mut and_test: i32 = 0;
+    if a < b {
+        if b > c {
+            and_test = 1;
+        }
+    }  // 1
+    
+    // Test logical OR using if-else
+    let mut or_test: i32 = 0;
+    if a > b {
+        or_test = 1;
+    } else {
+        if a == c {
+            or_test = 1;
+        }
+    }  // 1
+    
+    // Test negation using comparison
+    let mut not_test: i32 = 1;
+    if a > b {
+        not_test = 0;
+    }  // 1
+    
+    // Complex logical expression using nested ifs
+    let mut complex: i32 = 0;
+    if a == c {
+        if b > a {
+            if b >= c {
+                complex = 1;
+            }
+        }
+    }  // 1
+    
+    return eq + ne + lt + le + gt + ge + and_test + or_test + not_test + complex;  // 10
+}

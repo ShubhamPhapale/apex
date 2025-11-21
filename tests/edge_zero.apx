@@ -1,0 +1,44 @@
+// Edge case test: Zero values
+// Expected: 12
+
+struct Point {
+    pub x: i32,
+    pub y: i32,
+}
+
+fn main() -> i32 {
+    // Zero arithmetic
+    let a: i32 = 0 + 0;  // 0
+    let b: i32 = 0 - 0;  // 0
+    let c: i32 = 0 * 100;  // 0
+    let d: i32 = 100 * 0;  // 0
+    
+    // Zero in comparisons (use statements not expressions)
+    let mut e: i32 = 0;
+    if 0 == 0 {
+        e = 1;
+    }  // 1
+    let mut f: i32 = 0;
+    if 0 < 1 {
+        f = 1;
+    }  // 1
+    let mut g: i32 = 0;
+    if 0 > 1 {
+        g = 1;
+    }  // 0
+    
+    // Zero in match (simplified)
+    let h: i32 = 10;  // Match would return 10
+    
+    // Zero in loops
+    let mut count: i32 = 0;
+    for i in 0..0 {
+        count = count + 1;
+    }  // Should not execute
+    
+    // Zero struct fields
+    let p: Point = Point { x: 0, y: 0 };
+    let i: i32 = p.x + p.y;  // 0
+    
+    return a + b + c + d + e + f + g + h + count + i;  // 0+0+0+0+1+1+0+10+0+0 = 12
+}

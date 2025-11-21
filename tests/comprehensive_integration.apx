@@ -1,0 +1,135 @@
+// Comprehensive integration stress test
+// Tests: structs, functions, recursion, loops, conditionals, blocks, match, mutation
+// Expected: 200
+struct Point {
+    pub x: i32,
+    pub y: i32,
+}
+
+struct Rectangle {
+    pub top_left: Point,
+    pub bottom_right: Point,
+}
+
+fn abs(x: i32) -> i32 {
+    if x < 0 {
+        return 0 - x;
+    } else {
+        return x;
+    }
+}
+
+fn distance_squared(p1: Point, p2: Point) -> i32 {
+    let dx: i32 = p1.x - p2.x;
+    let dy: i32 = p1.y - p2.y;
+    return dx * dx + dy * dy;
+}
+
+fn factorial(n: i32) -> i32 {
+    if n <= 1 {
+        return 1;
+    } else {
+        return n * factorial(n - 1);
+    }
+}
+
+fn classify(n: i32) -> i32 {
+    match n {
+        0 => 0,
+        1 => 10,
+        2 => 20,
+        3 => 30,
+        _ => 100,
+    }
+}
+
+fn main() -> i32 {
+    // Struct initialization and field access
+    let p1: Point = Point { x: 0, y: 0 };
+    let p2: Point = Point { x: 3, y: 4 };
+    let dist_sq: i32 = distance_squared(p1, p2);  // 9 + 16 = 25
+    
+    // Rectangle with nested structs
+    let rect: Rectangle = Rectangle {
+        top_left: Point { x: 0, y: 10 },
+        bottom_right: Point { x: 10, y: 0 }
+    };
+    let area_approx: i32 = abs(rect.top_left.x - rect.bottom_right.x) * abs(rect.top_left.y - rect.bottom_right.y);  // 10 * 10 = 100
+    
+    // Recursion
+    let fact: i32 = factorial(4);  // 24
+    
+    // Match expressions
+    let mut match_sum: i32 = 0;
+    for i in 0..5 {
+        match_sum = match_sum + classify(i);  // 0 + 10 + 20 + 30 + 100 = 160
+    }
+    
+    // Complex loops with mutations
+    let mut loop_result: i32 = 0;
+    for i in 1..4 {
+        let mut inner_sum: i32 = 0;
+        for j in 1..3 {
+            inner_sum = inner_sum + i * j;
+        }
+        loop_result = loop_result + inner_sum;
+    }
+    // i=1: j=1,2: 1+2=3
+    // i=2: j=1,2: 2+4=6
+    // i=3: j=1,2: 3+6=9
+    // loop_result = 3 + 6 + 9 = 18
+    
+    // Nested conditionals
+    let cond_result: i32 = if dist_sq > 20 {
+        if dist_sq > 30 {
+            50
+        } else {
+            30  // This branch
+        }
+    } else {
+        10
+    };
+    
+    // Blocks with complex scoping
+    let block_result: i32 = {
+        let a: i32 = 5;
+        let b: i32 = {
+            let c: i32 = 3;
+            a + c  // 8
+        };
+        b * 2  // 16
+    };
+    
+    // While loop with mutation
+    let mut count: i32 = 0;
+    let mut val: i32 = 10;
+    while val > 0 {
+        count = count + 1;
+        val = val - 3;  // Runs 4 times
+    }
+    
+    // Match in conditional
+    let final_val: i32 = if count > 2 {
+        match count {
+            1 => 1,
+            2 => 2,
+            3 => 3,
+            4 => 7,  // This branch
+            _ => 0,
+        }
+    } else {
+        0
+    };
+    
+    // Calculate final result
+    // We need to hit exactly 200
+    // dist_sq=25, area_approx=100, fact=24, match_sum=160, loop_result=18, cond_result=30, block_result=16, count=4, final_val=7
+    // Let me use a subset: fact + cond_result + block_result + count + final_val = 24 + 30 + 16 + 4 + 7 = 81
+    // Or: area_approx + fact + loop_result + cond_result + block_result + final_val = 100 + 24 + 18 + 30 + 16 + 7 = 195
+    // Need 5 more... let's add dist_sq: would be 220, too much
+    // How about: area_approx + fact + loop_result + cond_result + block_result + count + final_val - dist_sq
+    // = 100 + 24 + 18 + 30 + 16 + 4 + 7 + 25 = 224, then subtract match_sum/8 or something...
+    
+    return area_approx + fact + loop_result + cond_result + block_result + count + final_val + count / 4;
+    // 100 + 24 + 18 + 30 + 16 + 4 + 7 + 1 = 200
+}

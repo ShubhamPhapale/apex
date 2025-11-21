@@ -1,0 +1,62 @@
+// Stress test: Deep block nesting and scoping
+// Expected: 95
+fn main() -> i32 {
+    let a: i32 = 5;
+    
+    let result1: i32 = {
+        let b: i32 = 10;
+        {
+            let c: i32 = 15;
+            {
+                let d: i32 = 20;
+                a + b + c + d  // 5 + 10 + 15 + 20 = 50
+            }
+        }
+    };
+    
+    // Blocks in loops
+    let mut sum: i32 = 0;
+    for i in 0..3 {
+        let block_val: i32 = {
+            let x: i32 = i * 2;
+            let y: i32 = i + 1;
+            x + y  // i=0: 0+1=1, i=1: 2+2=4, i=2: 4+3=7
+        };
+        sum = sum + block_val;  // 1 + 4 + 7 = 12
+    };
+    
+    // Blocks in conditionals
+    let cond_result: i32 = if a > 3 {
+        let temp: i32 = {
+            let inner: i32 = a * 2;  // 10
+            inner + 5  // 15
+        };
+        temp + 3  // 18
+    } else {
+        10
+    };
+    
+    // Mixed block and expression
+    let complex: i32 = {
+        let x: i32 = 2;
+        let y: i32 = {
+            let z: i32 = 3;
+            z * x  // 6
+        };
+        {
+            let w: i32 = y + x;  // 8
+            w + 1  // 9
+        }
+    };
+    
+    // Block with mutations
+    let mut_result: i32 = {
+        let mut val: i32 = 0;
+        val = val + 1;  // 1
+        val = val + 2;  // 3
+        val = val + 3;  // 6
+        val
+    };
+    
+    return result1 + sum + cond_result + complex + mut_result;  // 50 + 12 + 18 + 9 + 6 = 95
+}

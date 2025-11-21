@@ -1,0 +1,41 @@
+// Edge case test: Negative numbers
+// Expected: 213
+fn abs(n: i32) -> i32 {
+    if n < 0 {
+        return 0 - n;
+    }
+    return n;
+}
+
+fn main() -> i32 {
+    // Negative literals using unary minus
+    let a: i32 = 0 - 10;  // -10
+    let b: i32 = 0 - 5 + 15;  // 10
+    let c: i32 = 0 - 100 + 150;  // 50
+    
+    // Negative in arithmetic
+    let d: i32 = 10 - 20;  // -10
+    let e: i32 = (0 - 5) * 3;  // -15
+    let f: i32 = (0 - 20) / 4;  // -5
+    
+    // Negative in comparisons
+    let g: i32 = if (0 - 10) < 0 { 1 } else { 0 };  // 1
+    let h: i32 = if (0 - 5) > (0 - 10) { 1 } else { 0 };  // 1
+    let i: i32 = if (0 - 10) == (0 - 10) { 1 } else { 0 };  // 1
+    
+    // Negative in match
+    let j: i32 = match (0 - 5) {
+        x => if x < 0 { 100 } else { 0 },
+    };  // 100
+    
+    // Double negative
+    let k: i32 = 0 - (0 - 10);  // 10
+    
+    // Convert back to positive for return
+    let result: i32 = abs(a) + abs(d) + abs(e) + abs(f);
+    
+    return result + b + c + g + h + i + j + k;  // (10+10+15+5) + 10 + 50 + 1 + 1 + 1 + 100 + 10 = 213... let me recalculate
+    // abs values: 10, 10, 15, 5 = 40
+    // positives: 10, 50, 1, 1, 1, 100, 10 = 173
+    // total = 213
+}

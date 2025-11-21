@@ -1,0 +1,52 @@
+// Stress test: Complex match expressions with nested patterns
+// Expected: 265
+fn classify(n: i32) -> i32 {
+    match n {
+        0 => 100,
+        1 => 110,
+        2 => 120,
+        3 => 130,
+        _ => 999,
+    }
+}
+
+fn main() -> i32 {
+    let mut sum: i32 = 0;
+    
+    // Nested match in loop
+    for i in 0..5 {
+        let result: i32 = match i {
+            0 => 10,
+            1 => 20,
+            2 => 30,
+            3 => 40,
+            _ => 50,
+        };
+        sum = sum + result;
+    }
+    // sum = 10 + 20 + 30 + 40 + 50 = 150
+    
+    // Match calling function
+    let x: i32 = classify(1);  // 110
+    
+    // Match with arithmetic
+    let z: i32 = match 1 + 1 {
+        0 => 0,
+        1 => 1,
+        2 => 5,  // This branch
+        _ => 10,
+    };
+    
+    // Match in blocks
+    let block_result: i32 = {
+        let temp: i32 = 0;
+        match temp {
+            0 => 0,  // This branch
+            1 => 200,
+            2 => 300,
+            _ => 400,
+        }
+    };
+    
+    return sum + x + z + block_result;  // 150 + 110 + 5 + 0 = 265
+}

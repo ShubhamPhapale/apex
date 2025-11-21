@@ -1,0 +1,48 @@
+// Stress test: Complex struct operations
+// Expected: 118
+struct Point {
+    pub x: i32,
+    pub y: i32,
+}
+
+struct Line {
+    pub start: Point,
+    pub end: Point,
+}
+
+struct Shape {
+    pub center: Point,
+    pub line1: Line,
+    pub line2: Line,
+}
+
+fn main() -> i32 {
+    // Deep nesting with struct literals
+    let shape: Shape = Shape {
+        center: Point { x: 0, y: 0 },
+        line1: Line {
+            start: Point { x: 1, y: 2 },
+            end: Point { x: 3, y: 4 }
+        },
+        line2: Line {
+            start: Point { x: 5, y: 6 },
+            end: Point { x: 7, y: 8 }
+        }
+    };
+    
+    // Deep field access
+    let a: i32 = shape.center.x;  // 0
+    let b: i32 = shape.line1.start.x;  // 1
+    let c: i32 = shape.line1.end.y;  // 4
+    let d: i32 = shape.line2.start.x;  // 5
+    let e: i32 = shape.line2.end.y;  // 8
+    
+    // Multiple struct instances
+    let p1: Point = Point { x: 10, y: 20 };
+    let p2: Point = Point { x: 30, y: 40 };
+    
+    // Struct field arithmetic
+    let sum: i32 = p1.x + p1.y + p2.x + p2.y;  // 10 + 20 + 30 + 40 = 100
+    
+    return a + b + c + d + e + sum;  // 0 + 1 + 4 + 5 + 8 + 100 = 118
+}
